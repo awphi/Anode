@@ -16,6 +16,10 @@ var allowAnimation = true;
 $(function() {
 	document.getElementsByClassName('block')[1].style.height = "30%";
 	document.getElementsByClassName('block')[1].style.width = "60%";
+	var els = document.getElementsByClassName('block');
+	for(var i = 0; i < els.length; i ++) {
+		$(els[i]).css('background-image', 'url(./Emulators/' + emulators[i] + '/boxart.png)');
+	};
 });
 
 //Structure of emulators variable
@@ -41,6 +45,7 @@ function newBlock(top) {
 	document.getElementById('body').appendChild(div);
 	var els = document.getElementsByClassName('block');
 	var recent = els[els.length - 1];
+	$(recent).css('background-image', 'url(./Emulators/' + emulators[high] + '/boxart.png)');
 	recent.style.top = top;
 }
 
