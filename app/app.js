@@ -159,14 +159,48 @@ function scrollRoms(arg) {
 
 };
 
-//Opens roms of the current principle emulator
-function openRoms() {
+//Opens or closes the rom menu - arg is either 'open' or 'close'
+function romsMenu(arg) {
+	if(!allowAnimation) {
+		return;
+	};
+	allowAnimation = false;
+	var els = document.getElementsByClassName('block');
+	var highBlock, principleBlock, bottomBlock;
 
-};
+	for(var i = 0; i < els.length; i ++) {
+		if(els[i].style.top == '20%') {
+			highBlock = els[i];
+		} else if(els[i].style.top == '50%') {
+			principleBlock = els[i];
+		} else if(els[i].style.top == '80%') {
+			bottomBlock = els[i];
+		}
+	}
+	if(arg == 'open') {
+		scroll = 'roms';
+		//Move emulator menu to left
+		$('.block').animate({
+		   	left: '25%', width: '30%', height: '15%'
+	   	}, { duration: 200, queue: false, done: function() {
+		   	allowAnimation = true;
+	   	} });
 
-//Exits current rom menu and goes back to emulator selection
-function closeRoms() {
+		//Bring in rom menu
+   } else if (arg == 'close') {
+	   scroll = 'emulator';
+	   //Refocus emulator menu
+	   $('.block').animate({
+		  	left: '50%'
+	  	}, { duration: 200, queue: false });
+	   $(principleBlock).animate({
+		  	left: '50%', width: '60%', height: '30%'
+	  	}, { duration: 200, queue: false, done: function() {
+		  	allowAnimation = true;
+	  	} });
 
+		//Move & destroy rom menus
+   };
 };
 
 //Starts emulator for given game
@@ -190,11 +224,11 @@ window.onkeydown = function(e) {
 		}
 	} else if (code == 39) {
 		if(scroll == 'emulator') {
-			openRoms();
+			romsMenu('open');
 		} else if(scroll == 'roms') {
 			openGame();
 		};
 	} else if (code == 37 && scroll == 'roms') {
-		closeRoms();
+		romsMenu('close');
 	};
 };
