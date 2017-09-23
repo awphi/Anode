@@ -9,7 +9,10 @@ var high = 0;
 var principle = 1;
 var bottom = 2;
 
-//Renders the principle as larger on start - from then on it's animated in scrollEmulator();
+//Blocks animation spamming to break the UI
+var allowAnimation = true;
+
+//Wait till page has loaded by waiting for jQuery
 $(function() {
 	document.getElementsByClassName('block')[1].style.height = "30%";
 	document.getElementsByClassName('block')[1].style.width = "60%";
@@ -42,6 +45,10 @@ function newBlock(top) {
 }
 
 function scrollEmulator(arg) {
+	if(!allowAnimation) {
+		return;
+	};
+	allowAnimation = false;
 	var principleCache = principle;
 	var goal = "";
 	if(arg == "down") {
@@ -96,11 +103,17 @@ function scrollEmulator(arg) {
 
 			$(bottomBlock).animate({
 		       top: '120%'
-		   }, { duration: 200, queue: false });
+		   }, { duration: 200, queue: false, done: function() {
+			   $(bottomBlock).remove();
+			   allowAnimation = true;
+		   } });
 		} else {
 			$(highBlock).animate({
 				top: '-20%'
-		 	}, { duration: 200, queue: false });
+		 	}, { duration: 200, queue: false, done: function() {
+				$(highBlock).remove();
+				allowAnimation = true;
+			} });
 
 			$(principleBlock).animate({
 		       top: '20%', width: '30%', height: '15%'
@@ -132,7 +145,7 @@ function reloadFiles() {
 	});
 };
 
-window.onkeyup = function(e) {
+window.onkeydown = function(e) {
 	var code = e.keyCode ? e.keyCode : e.which;
 	if(code == 38) {
 		scrollEmulator("up");
