@@ -43,6 +43,7 @@ function newBlock(top) {
 
 function scrollEmulator(arg) {
 	var principleCache = principle;
+	var goal = "";
 	if(arg == "down") {
 		principle = high;
 		bottom = principleCache;
@@ -51,6 +52,9 @@ function scrollEmulator(arg) {
 		if(high > emulators.length - 1) {
 			high = 0;
 		};
+		//Once we've got the new high,principle & bottom we can move the blocks
+		newBlock("-20%");
+		goal = "20%";
 	} else {
 		principle = bottom;
 		high = principleCache;
@@ -58,8 +62,57 @@ function scrollEmulator(arg) {
 		if(bottom < 0) {
 			bottom = emulators.length - 1;
 		};
+		newBlock("120%");
+		goal = "80%";
 	}
+	//Retrieving all the currently shown blocks and storing them in vars to animate
+	var els = document.getElementsByClassName('block');
+	var recentBlock = els[els.length - 1];
+	var highBlock, principleBlock, bottomBlock;
+	for(var i = 0; i < els.length; i ++) {
+		if(els[i].style.top == "20%") {
+			highBlock = els[i];
+		} else if(els[i].style.top == "50%") {
+			principleBlock = els[i];
+		} else if(els[i].style.top == "80%") {
+			bottomBlock = els[i];
+		}
+	}
+	//This executes all the animations at once - iss beautiful
+	//Clean this code up tho - iss not beautiful
+	$(function () {
+	    $(recentBlock).animate({
+	       top: goal
+	    }, { duration: 200, queue: false });
+
+		if(arg == "down") {
+		    $(highBlock).animate({
+		       top: '50%', width: '60%', height: '30%'
+		    }, { duration: 200, queue: false });
+
+			$(principleBlock).animate({
+		       top: '80%', width: '30%', height: '15%'
+		    }, { duration: 200, queue: false });
+
+			$(bottomBlock).animate({
+		       top: '120%'
+		   }, { duration: 200, queue: false });
+		} else {
+			$(highBlock).animate({
+				top: '-20%'
+		 	}, { duration: 200, queue: false });
+
+			$(principleBlock).animate({
+		       top: '20%', width: '30%', height: '15%'
+		    }, { duration: 200, queue: false });
+
+			$(bottomBlock).animate({
+		       top: '50%', width: '60%', height: '30%'
+		   }, { duration: 200, queue: false });
+		}
+	});
 	console.log("Principle: " + principle + ", Bottom: " + bottom + ", High: " + high);
+	//Collect garbage (blocks with 120 or -20 top values)
 };
 
 //Reads in emulators/roms/all that jazz above
