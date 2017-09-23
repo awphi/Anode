@@ -1,26 +1,49 @@
 var path = require('path');
 var fs = require('fs');
 
-var emulators = [];
-emulators.roms = [];
-
+//Load up some intial variables
+var emulators = [{}];
 reloadFiles();
+
 var high = 0;
 var principle = 1;
 var bottom = 2;
-
-//Blocks animation spamming to break the UI
 var allowAnimation = true;
+var scroll = 'emulator';
 
-//Wait till page has loaded by waiting for jQuery
+//Wait till page has loaded by waiting for jQuery then render starting point
 $(function() {
-	document.getElementsByClassName('block')[1].style.height = "30%";
-	document.getElementsByClassName('block')[1].style.width = "60%";
+	document.getElementsByClassName('block')[1].style.height = '30%';
+	document.getElementsByClassName('block')[1].style.width = '60%';
 	var els = document.getElementsByClassName('block');
 	for(var i = 0; i < els.length; i ++) {
 		$(els[i]).css('background-image', 'url(./Emulators/' + emulators[i] + '/boxart.png)');
 	};
 });
+
+//Reads in emulators/roms/all that jazz above
+function reloadFiles() {
+	emulators = [];
+	fs.readdir('./Emulators', function(err,files) {
+		if( err ) {
+			console.log('Could not list directory ', err);
+			process.exit(1);
+		}
+		files.forEach(function(file,index) {
+			//So it ignores .DS_Store or any other files you want in there
+			if(!(String(file).split('')[0] == '.')) {
+				var current = emulators.push(new String(file)) - 1;
+				fs.readdir('./Emulators/' + file + '/roms', function(errTwo,subFiles) {
+					if(errTwo){
+						console.log('Could not list directory ', err);
+						process.exit(1);
+					};
+					emulators[current].roms = subFiles;
+				});
+			}
+		});
+	});
+};
 
 //Structure of emulators variable
 //	emulators:
@@ -37,11 +60,11 @@ $(function() {
 //				.media = media.mp4/png
 //				.metadata = metadata string
 
-//Creates a new block at the top or bottom by giving it's "top" style text
+//Creates a new block at the top or bottom by giving it's 'top' style text
 //	\-> Good values I found are -20% for top and 120% for bottom!
 function newBlock(top) {
-	var div = document.createElement("div");
-	div.className = "block";
+	var div = document.createElement('div');
+	div.className = 'block';
 	document.getElementById('body').appendChild(div);
 	var els = document.getElementsByClassName('block');
 	var recent = els[els.length - 1];
@@ -55,8 +78,8 @@ function scrollEmulator(arg) {
 	};
 	allowAnimation = false;
 	var principleCache = principle;
-	var goal = "";
-	if(arg == "down") {
+	var goal = '';
+	if(arg == 'down') {
 		principle = high;
 		bottom = principleCache;
 
@@ -65,8 +88,8 @@ function scrollEmulator(arg) {
 			high = 0;
 		};
 		//Once we've got the new high,principle & bottom we can move the blocks
-		newBlock("-20%");
-		goal = "20%";
+		newBlock('-20%');
+		goal = '20%';
 	} else {
 		principle = bottom;
 		high = principleCache;
@@ -74,19 +97,19 @@ function scrollEmulator(arg) {
 		if(bottom < 0) {
 			bottom = emulators.length - 1;
 		};
-		newBlock("120%");
-		goal = "80%";
+		newBlock('120%');
+		goal = '80%';
 	}
 	//Retrieving all the currently shown blocks and storing them in vars to animate
 	var els = document.getElementsByClassName('block');
 	var recentBlock = els[els.length - 1];
 	var highBlock, principleBlock, bottomBlock;
 	for(var i = 0; i < els.length; i ++) {
-		if(els[i].style.top == "20%") {
+		if(els[i].style.top == '20%') {
 			highBlock = els[i];
-		} else if(els[i].style.top == "50%") {
+		} else if(els[i].style.top == '50%') {
 			principleBlock = els[i];
-		} else if(els[i].style.top == "80%") {
+		} else if(els[i].style.top == '80%') {
 			bottomBlock = els[i];
 		}
 	}
@@ -97,7 +120,7 @@ function scrollEmulator(arg) {
 	       top: goal
 	    }, { duration: 200, queue: false });
 
-		if(arg == "down") {
+		if(arg == 'down') {
 		    $(highBlock).animate({
 		       top: '50%', width: '60%', height: '30%'
 		    }, { duration: 200, queue: false });
@@ -129,32 +152,49 @@ function scrollEmulator(arg) {
 		   }, { duration: 200, queue: false });
 		}
 	});
-	console.log("Principle: " + principle + ", Bottom: " + bottom + ", High: " + high);
-	//Collect garbage (blocks with 120 or -20 top values)
+	console.log('Principle: ' + principle + ', Bottom: ' + bottom + ', High: ' + high);
 };
 
-//Reads in emulators/roms/all that jazz above
-function reloadFiles() {
-	emulators = [];
-	fs.readdir("./Emulators", function( err, files ) {
-		if( err ) {
-			alert("Could list directory ", err);
-			process.exit(1);
-		}
-		files.forEach(function(file,index) {
-			//So it ignores .DS_Store or any other files you want in there
-			if(!(String(file).split("")[0] == ".")) {
-				emulators.push(file);
-			}
-		});
-	});
+function scrollRoms(arg) {
+
+};
+
+//Opens roms of the current principle emulator
+function openRoms() {
+
+};
+
+//Exits current rom menu and goes back to emulator selection
+function closeRoms() {
+
+};
+
+//Starts emulator for given game
+function openGame() {
+
 };
 
 window.onkeydown = function(e) {
 	var code = e.keyCode ? e.keyCode : e.which;
-	if(code == 38) {
-		scrollEmulator("up");
-	} else if (code == 40) {
-		scrollEmulator("down");
-	}
+	if(code == 38 || code == 40) {
+		var dir;
+		if(code == 38) {
+			dir = 'up'
+		} else if (code == 40) {
+			dir = 'down'
+		}
+		if(scroll == 'emulator') {
+			scrollEmulator(dir);
+		} else if (scroll == 'roms') {
+			scrollRoms(dir)
+		}
+	} else if (code == 39) {
+		if(scroll == 'emulator') {
+			openRoms();
+		} else if(scroll == 'roms') {
+			openGame();
+		};
+	} else if (code == 37 && scroll == 'roms') {
+		closeRoms();
+	};
 };
