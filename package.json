@@ -1,0 +1,14 @@
+{
+  "name": "Annode",
+  "version": "0.0.1",
+  "description": "by Annode co.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "AWPH",
+  "license": "ISC",
+  "devDependencies": {
+    "electron-prebuilt": "^1.4.13"
+  }
+}
