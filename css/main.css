@@ -6,7 +6,7 @@ h1 {
 	color: white;
 }
 
-.block {
+.emulatorBlock {
 	background-color: white;
 	background-size: cover;
 	position: fixed;
@@ -16,4 +16,18 @@ h1 {
 	text-align: center;
 	height: 15%;
 	width: 30%;
+	border-radius: 10%;
+}
+
+.romBlock {
+	background-color: white;
+	position: fixed;
+	transform: translate(-50%, -50%);
+	left: 70%;
+	top: 50%;
+	font-size: 72pt;
+	text-align: center;
+	border-radius: 10%;
+	width: 50%;
+	height: 80%;
 }

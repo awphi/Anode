@@ -10,12 +10,13 @@ var principle = 1;
 var bottom = 2;
 var allowAnimation = true;
 var scroll = 'emulator';
+var currentRom = 0;
 
 //Wait till page has loaded by waiting for jQuery then render starting point
 $(function() {
-	document.getElementsByClassName('block')[1].style.height = '30%';
-	document.getElementsByClassName('block')[1].style.width = '60%';
-	var els = document.getElementsByClassName('block');
+	document.getElementsByClassName('emulatorBlock')[1].style.height = '30%';
+	document.getElementsByClassName('emulatorBlock')[1].style.width = '60%';
+	var els = document.getElementsByClassName('emulatorBlock');
 	for(var i = 0; i < els.length; i ++) {
 		$(els[i]).css('background-image', 'url(./Emulators/' + emulators[i] + '/boxart.png)');
 	};
@@ -60,13 +61,13 @@ function reloadFiles() {
 //				.media = media.mp4/png
 //				.metadata = metadata string
 
-//Creates a new block at the top or bottom by giving it's 'top' style text
+//Creates a new emulatorBlock at the top or bottom by giving it's 'top' style text
 //	\-> Good values I found are -20% for top and 120% for bottom!
-function newBlock(top) {
+function newemulatorBlock(top) {
 	var div = document.createElement('div');
-	div.className = 'block';
+	div.className = 'emulatorBlock';
 	document.getElementById('body').appendChild(div);
-	var els = document.getElementsByClassName('block');
+	var els = document.getElementsByClassName('emulatorBlock');
 	var recent = els[els.length - 1];
 	$(recent).css('background-image', 'url(./Emulators/' + emulators[high] + '/boxart.png)');
 	recent.style.top = top;
@@ -79,6 +80,8 @@ function scrollEmulator(arg) {
 	allowAnimation = false;
 	var principleCache = principle;
 	var goal = '';
+	var recentemulatorBlock;
+
 	if(arg == 'down') {
 		principle = high;
 		bottom = principleCache;
@@ -87,8 +90,8 @@ function scrollEmulator(arg) {
 		if(high > emulators.length - 1) {
 			high = 0;
 		};
-		//Once we've got the new high,principle & bottom we can move the blocks
-		newBlock('-20%');
+		//Once we've got the new high,principle & bottom we can move the emulatorBlocks
+		recentemulatorBlock = newemulatorBlock('-20%');
 		goal = '20%';
 	} else {
 		principle = bottom;
@@ -97,57 +100,56 @@ function scrollEmulator(arg) {
 		if(bottom < 0) {
 			bottom = emulators.length - 1;
 		};
-		newBlock('120%');
+		recentemulatorBlock = newemulatorBlock('120%');
 		goal = '80%';
 	}
-	//Retrieving all the currently shown blocks and storing them in vars to animate
-	var els = document.getElementsByClassName('block');
-	var recentBlock = els[els.length - 1];
-	var highBlock, principleBlock, bottomBlock;
+	//Retrieving all the currently shown emulatorBlocks and storing them in vars to animate
+	var els = document.getElementsByClassName('emulatorBlock');
+	var highemulatorBlock, principleemulatorBlock, bottomemulatorBlock;
 	for(var i = 0; i < els.length; i ++) {
 		if(els[i].style.top == '20%') {
-			highBlock = els[i];
+			highemulatorBlock = els[i];
 		} else if(els[i].style.top == '50%') {
-			principleBlock = els[i];
+			principleemulatorBlock = els[i];
 		} else if(els[i].style.top == '80%') {
-			bottomBlock = els[i];
+			bottomemulatorBlock = els[i];
 		}
 	}
 	//This executes all the animations at once - iss beautiful
 	//Clean this code up tho - iss not beautiful
 	$(function () {
-	    $(recentBlock).animate({
+	    $(recentemulatorBlock).animate({
 	       top: goal
 	    }, { duration: 200, queue: false });
 
 		if(arg == 'down') {
-		    $(highBlock).animate({
+		    $(highemulatorBlock).animate({
 		       top: '50%', width: '60%', height: '30%'
 		    }, { duration: 200, queue: false });
 
-			$(principleBlock).animate({
+			$(principleemulatorBlock).animate({
 		       top: '80%', width: '30%', height: '15%'
 		    }, { duration: 200, queue: false });
 
-			$(bottomBlock).animate({
+			$(bottomemulatorBlock).animate({
 		       top: '120%'
 		   }, { duration: 200, queue: false, done: function() {
-			   $(bottomBlock).remove();
+			   $(bottomemulatorBlock).remove();
 			   allowAnimation = true;
 		   } });
 		} else {
-			$(highBlock).animate({
+			$(highemulatorBlock).animate({
 				top: '-20%'
 		 	}, { duration: 200, queue: false, done: function() {
-				$(highBlock).remove();
+				$(highemulatorBlock).remove();
 				allowAnimation = true;
 			} });
 
-			$(principleBlock).animate({
+			$(principleemulatorBlock).animate({
 		       top: '20%', width: '30%', height: '15%'
 		    }, { duration: 200, queue: false });
 
-			$(bottomBlock).animate({
+			$(bottomemulatorBlock).animate({
 		       top: '50%', width: '60%', height: '30%'
 		   }, { duration: 200, queue: false });
 		}
@@ -155,8 +157,27 @@ function scrollEmulator(arg) {
 	console.log('Principle: ' + principle + ', Bottom: ' + bottom + ', High: ' + high);
 };
 
-function scrollRoms(arg) {
+function newromBlock(top) {
+	var div = document.createElement('div');
+	div.className = 'romBlock';
+	document.getElementById('body').appendChild(div);
+	var els = document.getElementsByClassName('romBlock');
+	var recent = els[els.length - 1];
+	recent.style.top = top;
+	return recent;
+};
 
+function scrollRoms(arg) {
+	if(!allowAnimation) {
+		return;
+	};
+	allowAnimation = false;
+
+	currentRom ++;
+	if(currentRom > emulators[principle].roms.length) {
+		currentRom = 0;
+	};
+	var current = document.getElementsByClassName('romBlock')[0];
 };
 
 //Opens or closes the rom menu - arg is either 'open' or 'close'
@@ -165,35 +186,39 @@ function romsMenu(arg) {
 		return;
 	};
 	allowAnimation = false;
-	var els = document.getElementsByClassName('block');
-	var highBlock, principleBlock, bottomBlock;
+
+	var els = document.getElementsByClassName('emulatorBlock');
+	var highemulatorBlock, principleemulatorBlock, bottomemulatorBlock;
 
 	for(var i = 0; i < els.length; i ++) {
 		if(els[i].style.top == '20%') {
-			highBlock = els[i];
+			highemulatorBlock = els[i];
 		} else if(els[i].style.top == '50%') {
-			principleBlock = els[i];
+			principleemulatorBlock = els[i];
 		} else if(els[i].style.top == '80%') {
-			bottomBlock = els[i];
+			bottomemulatorBlock = els[i];
 		}
 	}
 	if(arg == 'open') {
 		scroll = 'roms';
+		currentRom = 0;
 		//Move emulator menu to left
-		$('.block').animate({
+		$('.emulatorBlock').animate({
 		   	left: '25%', width: '30%', height: '15%'
 	   	}, { duration: 200, queue: false, done: function() {
 		   	allowAnimation = true;
 	   	} });
 
+		//emulators[principle].roms
+
 		//Bring in rom menu
    } else if (arg == 'close') {
 	   scroll = 'emulator';
 	   //Refocus emulator menu
-	   $('.block').animate({
+	   $('.emulatorBlock').animate({
 		  	left: '50%'
 	  	}, { duration: 200, queue: false });
-	   $(principleBlock).animate({
+	   $(principleemulatorBlock).animate({
 		  	left: '50%', width: '60%', height: '30%'
 	  	}, { duration: 200, queue: false, done: function() {
 		  	allowAnimation = true;
