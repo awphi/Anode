@@ -71,6 +71,7 @@ function newemulatorBlock(top) {
 	var recent = els[els.length - 1];
 	$(recent).css('background-image', 'url(./Emulators/' + emulators[high] + '/boxart.png)');
 	recent.style.top = top;
+	return recent;
 }
 
 function scrollEmulator(arg) {
@@ -210,8 +211,11 @@ function romsMenu(arg) {
 	   	} });
 
 		//emulators[principle].roms
-
 		//Bring in rom menu
+		var newRom = newromBlock('-85%');
+		$(newRom).animate({
+		   top: '50%'
+	   }, { duration: 200, queue: false });
    } else if (arg == 'close') {
 	   scroll = 'emulator';
 	   //Refocus emulator menu
@@ -220,11 +224,15 @@ function romsMenu(arg) {
 	  	}, { duration: 200, queue: false });
 	   $(principleemulatorBlock).animate({
 		  	left: '50%', width: '60%', height: '30%'
-	  	}, { duration: 200, queue: false, done: function() {
-		  	allowAnimation = true;
-	  	} });
+	  	}, { duration: 200, queue: false });
 
 		//Move & destroy rom menus
+		$('.romBlock').animate({
+			left: '150%'
+		}, { duration: 200, queue: false, done: function() {
+			$('.romBlock').remove();
+			allowAnimation = true;
+		} });
    };
 };
 
