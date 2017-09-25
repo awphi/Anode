@@ -1,5 +1,10 @@
 h1 {
-	color: white;
+	color: black;
+	text-align: center;
+	padding: 10px;
+	margin: 0%;
+	font-size: 24pt;
+	font-family: pixeledregular;
 }
 
 body {
@@ -17,6 +22,7 @@ body {
 	height: 15%;
 	width: 30%;
 	border-radius: 10%;
+	box-shadow: 10px 10px grey;
 }
 
 .romBlock {
@@ -30,4 +36,8 @@ body {
 	border-radius: 10%;
 	width: 50%;
 	height: 80%;
+	display: flex;
+	flex: auto;
+	flex-direction: column;
+	box-shadow: 10px 10px grey;
 }

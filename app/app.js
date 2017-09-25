@@ -2,48 +2,40 @@ var path = require('path');
 var fs = require('fs');
 
 //Load up some intial variables
-var emulators = [{}];
-reloadFiles();
+var emulators = [];
 
-var high = 0;
 var principle = 1;
-var bottom = 2;
-var allowAnimation = true;
+var allowAnimation = false;
 var scroll = 'emulator';
 var currentRom = 0;
 
-//Wait till page has loaded by waiting for jQuery then render starting point
+//Init emulator queue - reloaded when reloadFIles is called
+var emulatorQueue;
+
+//Wait till page has loaded by waiting for jQuery then allow usage
 $(function() {
+	reloadFiles();
 	document.getElementsByClassName('emulatorBlock')[1].style.height = '30%';
 	document.getElementsByClassName('emulatorBlock')[1].style.width = '60%';
 	var els = document.getElementsByClassName('emulatorBlock');
 	for(var i = 0; i < els.length; i ++) {
 		$(els[i]).css('background-image', 'url(./Emulators/' + emulators[i] + '/boxart.png)');
 	};
+	allowAnimation = true;
 });
 
-//Reads in emulators/roms/all that jazz above
+//Reads in emulators/roms/all that jazz above - add in option to define Emulator files separately and DL them if they're not there
 function reloadFiles() {
-	emulators = [];
-	fs.readdir('./Emulators', function(err,files) {
-		if( err ) {
-			console.log('Could not list directory ', err);
-			process.exit(1);
-		}
-		files.forEach(function(file,index) {
-			//So it ignores .DS_Store or any other files you want in there
-			if(!(String(file).split('')[0] == '.')) {
-				var current = emulators.push(new String(file)) - 1;
-				fs.readdir('./Emulators/' + file + '/roms', function(errTwo,subFiles) {
-					if(errTwo){
-						console.log('Could not list directory ', err);
-						process.exit(1);
-					};
-					emulators[current].roms = subFiles;
-				});
-			}
-		});
-	});
+	emulators = fs.readdirSync('./Emulators');
+	console.log(emulators);
+	for(var i = 0; i < emulators.length; i ++) {
+		emulators[i] = new String(emulators[i]);
+		emulators[i].roms = fs.readdirSync('./Emulators/' + emulators[i] + '/roms');
+	};
+	emulatorQueue = [];
+	for(var i = 0; i < emulators.length; i ++) {
+		emulatorQueue.push(i);
+	}
 };
 
 //Structure of emulators variable
@@ -63,13 +55,13 @@ function reloadFiles() {
 
 //Creates a new emulatorBlock at the top or bottom by giving it's 'top' style text
 //	\-> Good values I found are -20% for top and 120% for bottom!
-function newemulatorBlock(top) {
+function newemulatorBlock(top, id) {
 	var div = document.createElement('div');
 	div.className = 'emulatorBlock';
 	document.getElementById('body').appendChild(div);
 	var els = document.getElementsByClassName('emulatorBlock');
 	var recent = els[els.length - 1];
-	$(recent).css('background-image', 'url(./Emulators/' + emulators[high] + '/boxart.png)');
+	$(recent).css('background-image', 'url(./Emulators/' + emulators[id] + '/boxart.png)');
 	recent.style.top = top;
 	return recent;
 }
@@ -82,31 +74,10 @@ function scrollEmulator(arg) {
 	var principleCache = principle;
 	var goal = '';
 	var recentemulatorBlock;
+	var highemulatorBlock, principleemulatorBlock, bottomemulatorBlock;
 
-	if(arg == 'down') {
-		principle = high;
-		bottom = principleCache;
-
-		high += 1;
-		if(high > emulators.length - 1) {
-			high = 0;
-		};
-		//Once we've got the new high,principle & bottom we can move the emulatorBlocks
-		recentemulatorBlock = newemulatorBlock('-20%');
-		goal = '20%';
-	} else {
-		principle = bottom;
-		high = principleCache;
-		bottom -= 1;
-		if(bottom < 0) {
-			bottom = emulators.length - 1;
-		};
-		recentemulatorBlock = newemulatorBlock('120%');
-		goal = '80%';
-	}
 	//Retrieving all the currently shown emulatorBlocks and storing them in vars to animate
 	var els = document.getElementsByClassName('emulatorBlock');
-	var highemulatorBlock, principleemulatorBlock, bottomemulatorBlock;
 	for(var i = 0; i < els.length; i ++) {
 		if(els[i].style.top == '20%') {
 			highemulatorBlock = els[i];
@@ -116,6 +87,20 @@ function scrollEmulator(arg) {
 			bottomemulatorBlock = els[i];
 		}
 	}
+
+	if(arg == 'down') {
+		var shifted = emulatorQueue.shift();
+		emulatorQueue.push(shifted);
+		//Once we've got the new high,principle & bottom we can move the emulatorBlocks
+		recentemulatorBlock = newemulatorBlock('-20%', emulatorQueue[0]);
+		goal = '20%';
+	} else {
+		var popped = emulatorQueue.pop();
+		emulatorQueue.unshift(popped);
+		recentemulatorBlock = newemulatorBlock('120%', emulatorQueue[2]);
+		goal = '80%';
+	}
+	console.log(emulatorQueue);
 	//This executes all the animations at once - iss beautiful
 	//Clean this code up tho - iss not beautiful
 	$(function () {
@@ -155,11 +140,13 @@ function scrollEmulator(arg) {
 		   }, { duration: 200, queue: false });
 		}
 	});
-	console.log('Principle: ' + principle + ', Bottom: ' + bottom + ', High: ' + high);
 };
 
-function newromBlock(top) {
+function newromBlock(top, emulator, gameNumber) {
 	var div = document.createElement('div');
+	var title = document.createElement('h1');
+	title.innerHTML = emulator.roms[gameNumber];
+	div.appendChild(title);
 	div.className = 'romBlock';
 	document.getElementById('body').appendChild(div);
 	var els = document.getElementsByClassName('romBlock');
@@ -174,11 +161,38 @@ function scrollRoms(arg) {
 	};
 	allowAnimation = false;
 
-	currentRom ++;
-	if(currentRom > emulators[principle].roms.length) {
-		currentRom = 0;
-	};
 	var current = document.getElementsByClassName('romBlock')[0];
+	var goal = '';
+
+	if(arg == 'down') {
+		currentRom ++;
+		if(currentRom > emulators[principle].roms.length - 1) {
+			currentRom = 0;
+		};
+		var newBlock = newromBlock('-85%',emulators[principle],currentRom);
+		goal = '185%';
+	} else if(arg == 'up') {
+		currentRom --;
+		if(currentRom < 0) {
+			currentRom = emulators[principle].roms.length - 1;
+		};
+		var newBlock = newromBlock('185%',emulators[principle],currentRom);
+		goal = '-85%';
+	}
+
+	//Old one out first
+	$(current).animate({
+	   top: goal
+   }, { duration: 200, queue: false, done: function() {
+	   $(current).remove();
+   } });
+
+   //New one in
+   $(newBlock).animate({
+	  top: '50%'
+  }, { duration: 200, queue: false, done: function() {
+	  allowAnimation = true;
+  } });
 };
 
 //Opens or closes the rom menu - arg is either 'open' or 'close'
@@ -212,7 +226,7 @@ function romsMenu(arg) {
 
 		//emulators[principle].roms
 		//Bring in rom menu
-		var newRom = newromBlock('-85%');
+		var newRom = newromBlock('-85%',emulators[principle], 0);
 		$(newRom).animate({
 		   top: '50%'
 	   }, { duration: 200, queue: false });
