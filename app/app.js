@@ -4,7 +4,6 @@ var fs = require('fs');
 //Load up some intial variables
 var emulators = [];
 
-var principle = 1;
 var allowAnimation = false;
 var scroll = 'emulator';
 var currentRom = 0;
@@ -15,22 +14,35 @@ var emulatorQueue;
 //Wait till page has loaded by waiting for jQuery then allow usage
 $(function() {
 	reloadFiles();
+	//!Important - fix this legacy code
 	document.getElementsByClassName('emulatorBlock')[1].style.height = '30%';
 	document.getElementsByClassName('emulatorBlock')[1].style.width = '60%';
 	var els = document.getElementsByClassName('emulatorBlock');
 	for(var i = 0; i < els.length; i ++) {
-		$(els[i]).css('background-image', 'url(./Emulators/' + emulators[i] + '/boxart.png)');
+		$(els[i]).css('background-image', 'url(./Emulators/' + emulators[i] + '/media.png)');
 	};
+	//Let's goooooo
 	allowAnimation = true;
 });
 
 //Reads in emulators/roms/all that jazz above - add in option to define Emulator files separately and DL them if they're not there
+//Syncronous so it should be run before allowing the user to begin interacting
 function reloadFiles() {
 	emulators = fs.readdirSync('./Emulators');
 	console.log(emulators);
 	for(var i = 0; i < emulators.length; i ++) {
 		emulators[i] = new String(emulators[i]);
-		emulators[i].roms = fs.readdirSync('./Emulators/' + emulators[i] + '/roms');
+		var roms = fs.readdirSync('./Emulators/' + emulators[i] + '/roms');
+		emulators[i].roms = [];
+		for(var j = 0; j < roms.length; j ++) {
+			emulators[i].roms[j] = new String(roms[j]);
+			emulators[i].roms[j].media = './Emulators/' + emulators[i] + '/roms/' + roms[j] + '/media.png';
+			if(fs.existsSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.txt')) {
+				emulators[i].roms[j].metadata = fs.readFileSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.txt', 'utf8');
+			} else {
+				emulators[i].roms[j].metadata = 'No description available for this game currently!';
+			}
+		};
 	};
 	emulatorQueue = [];
 	for(var i = 0; i < emulators.length; i ++) {
@@ -61,7 +73,7 @@ function newemulatorBlock(top, id) {
 	document.getElementById('body').appendChild(div);
 	var els = document.getElementsByClassName('emulatorBlock');
 	var recent = els[els.length - 1];
-	$(recent).css('background-image', 'url(./Emulators/' + emulators[id] + '/boxart.png)');
+	$(recent).css('background-image', 'url(./Emulators/' + emulators[id] + '/media.png)');
 	recent.style.top = top;
 	return recent;
 }
@@ -71,7 +83,6 @@ function scrollEmulator(arg) {
 		return;
 	};
 	allowAnimation = false;
-	var principleCache = principle;
 	var goal = '';
 	var recentemulatorBlock;
 	var highemulatorBlock, principleemulatorBlock, bottomemulatorBlock;
@@ -100,7 +111,6 @@ function scrollEmulator(arg) {
 		recentemulatorBlock = newemulatorBlock('120%', emulatorQueue[2]);
 		goal = '80%';
 	}
-	console.log(emulatorQueue);
 	//This executes all the animations at once - iss beautiful
 	//Clean this code up tho - iss not beautiful
 	$(function () {
@@ -144,10 +154,21 @@ function scrollEmulator(arg) {
 
 function newromBlock(top, emulator, gameNumber) {
 	var div = document.createElement('div');
+	div.className = 'romBlock';
+
 	var title = document.createElement('h1');
 	title.innerHTML = emulator.roms[gameNumber];
 	div.appendChild(title);
-	div.className = 'romBlock';
+
+	var img = document.createElement('img');
+	img.className = 'romMedia';
+	$(img).attr("src", emulator.roms[gameNumber].media);
+	div.appendChild(img);
+
+	var metadata = document.createElement('p');
+	metadata.innerHTML = emulator.roms[gameNumber].metadata;
+	div.appendChild(metadata);
+
 	document.getElementById('body').appendChild(div);
 	var els = document.getElementsByClassName('romBlock');
 	var recent = els[els.length - 1];
@@ -166,17 +187,17 @@ function scrollRoms(arg) {
 
 	if(arg == 'down') {
 		currentRom ++;
-		if(currentRom > emulators[principle].roms.length - 1) {
+		if(currentRom > emulators[emulatorQueue[1]].roms.length - 1) {
 			currentRom = 0;
 		};
-		var newBlock = newromBlock('-85%',emulators[principle],currentRom);
+		var newBlock = newromBlock('-85%',emulators[emulatorQueue[1]],currentRom);
 		goal = '185%';
 	} else if(arg == 'up') {
 		currentRom --;
 		if(currentRom < 0) {
-			currentRom = emulators[principle].roms.length - 1;
+			currentRom = emulators[emulatorQueue[1]].roms.length - 1;
 		};
-		var newBlock = newromBlock('185%',emulators[principle],currentRom);
+		var newBlock = newromBlock('185%',emulators[emulatorQueue[1]],currentRom);
 		goal = '-85%';
 	}
 
@@ -226,7 +247,7 @@ function romsMenu(arg) {
 
 		//emulators[principle].roms
 		//Bring in rom menu
-		var newRom = newromBlock('-85%',emulators[principle], 0);
+		var newRom = newromBlock('-85%',emulators[emulatorQueue[1]], 0);
 		$(newRom).animate({
 		   top: '50%'
 	   }, { duration: 200, queue: false });
