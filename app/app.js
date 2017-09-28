@@ -14,13 +14,16 @@ var emulatorQueue;
 //Wait till page has loaded by waiting for jQuery then allow usage
 $(function() {
 	reloadFiles();
-	//!Important - fix this legacy code
-	document.getElementsByClassName('emulatorBlock')[1].style.height = '30%';
-	document.getElementsByClassName('emulatorBlock')[1].style.width = '60%';
-	var els = document.getElementsByClassName('emulatorBlock');
-	for(var i = 0; i < els.length; i ++) {
-		$(els[i]).css('background-image', 'url(./Emulators/' + emulators[i] + '/media.png)');
-	};
+	var topVal = 20;
+	for(var i = 0; i < 3; i ++) {
+		var newEm  = newemulatorBlock(topVal + '%',emulatorQueue[i]);
+		if(i == 1) {
+			newEm.style.height = '30%';
+			newEm.style.width = '60%';
+		};
+		$(newEm).css('background-image', 'url(./Emulators/' + emulators[emulatorQueue[i]] + '/media.png)');
+		topVal += 30;
+	}
 	//Let's goooooo
 	allowAnimation = true;
 });
@@ -38,9 +41,10 @@ function reloadFiles() {
 			emulators[i].roms[j] = new String(roms[j]);
 			emulators[i].roms[j].media = './Emulators/' + emulators[i] + '/roms/' + roms[j] + '/media.png';
 			if(fs.existsSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.txt')) {
-				emulators[i].roms[j].metadata = fs.readFileSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.txt', 'utf8');
+				var readIn = fs.readFileSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.txt', 'utf8');
+				emulators[i].roms[j].metadata = readIn.substring(0,600);
 			} else {
-				emulators[i].roms[j].metadata = 'No description available for this game currently!';
+				emulators[i].roms[j].metadata = 'Sorry, no description available for this game currently!';
 			}
 		};
 	};
@@ -74,6 +78,7 @@ function newemulatorBlock(top, id) {
 	var els = document.getElementsByClassName('emulatorBlock');
 	var recent = els[els.length - 1];
 	$(recent).css('background-image', 'url(./Emulators/' + emulators[id] + '/media.png)');
+	console.log(emulators[id] + ' ' + id);
 	recent.style.top = top;
 	return recent;
 }
@@ -87,7 +92,7 @@ function scrollEmulator(arg) {
 	var recentemulatorBlock;
 	var highemulatorBlock, principleemulatorBlock, bottomemulatorBlock;
 
-	//Retrieving all the currently shown emulatorBlocks and storing them in vars to animate
+	//Retrieving all the currently shown emulatorBlocks and storing them in vars to animate - need to get a better way of doing this
 	var els = document.getElementsByClassName('emulatorBlock');
 	for(var i = 0; i < els.length; i ++) {
 		if(els[i].style.top == '20%') {
@@ -100,56 +105,55 @@ function scrollEmulator(arg) {
 	}
 
 	if(arg == 'down') {
-		var shifted = emulatorQueue.shift();
-		emulatorQueue.push(shifted);
+		var popped = emulatorQueue.pop();
+		emulatorQueue.unshift(popped);
 		//Once we've got the new high,principle & bottom we can move the emulatorBlocks
 		recentemulatorBlock = newemulatorBlock('-20%', emulatorQueue[0]);
 		goal = '20%';
 	} else {
-		var popped = emulatorQueue.pop();
-		emulatorQueue.unshift(popped);
+		var shifted = emulatorQueue.shift();
+		emulatorQueue.push(shifted);
 		recentemulatorBlock = newemulatorBlock('120%', emulatorQueue[2]);
 		goal = '80%';
 	}
 	//This executes all the animations at once - iss beautiful
 	//Clean this code up tho - iss not beautiful
-	$(function () {
-	    $(recentemulatorBlock).animate({
-	       top: goal
+    $(recentemulatorBlock).animate({
+       top: goal
+    }, { duration: 200, queue: false });
+
+	//Do this using class selectors & assigning element property to emulatorQueue
+	if(arg == 'down') {
+	    $(highemulatorBlock).animate({
+	       top: '50%', width: '60%', height: '30%'
 	    }, { duration: 200, queue: false });
 
-		if(arg == 'down') {
-		    $(highemulatorBlock).animate({
-		       top: '50%', width: '60%', height: '30%'
-		    }, { duration: 200, queue: false });
+		$(principleemulatorBlock).animate({
+	       top: '80%', width: '30%', height: '15%'
+	    }, { duration: 200, queue: false });
 
-			$(principleemulatorBlock).animate({
-		       top: '80%', width: '30%', height: '15%'
-		    }, { duration: 200, queue: false });
+		$(bottomemulatorBlock).animate({
+	       top: '120%'
+	   }, { duration: 200, queue: false, done: function() {
+		   $(bottomemulatorBlock).remove();
+		   allowAnimation = true;
+	   } });
+	} else {
+		$(highemulatorBlock).animate({
+			top: '-20%'
+	 	}, { duration: 200, queue: false, done: function() {
+			$(highemulatorBlock).remove();
+			allowAnimation = true;
+		} });
 
-			$(bottomemulatorBlock).animate({
-		       top: '120%'
-		   }, { duration: 200, queue: false, done: function() {
-			   $(bottomemulatorBlock).remove();
-			   allowAnimation = true;
-		   } });
-		} else {
-			$(highemulatorBlock).animate({
-				top: '-20%'
-		 	}, { duration: 200, queue: false, done: function() {
-				$(highemulatorBlock).remove();
-				allowAnimation = true;
-			} });
+		$(principleemulatorBlock).animate({
+	       top: '20%', width: '30%', height: '15%'
+	    }, { duration: 200, queue: false });
 
-			$(principleemulatorBlock).animate({
-		       top: '20%', width: '30%', height: '15%'
-		    }, { duration: 200, queue: false });
-
-			$(bottomemulatorBlock).animate({
-		       top: '50%', width: '60%', height: '30%'
-		   }, { duration: 200, queue: false });
-		}
-	});
+		$(bottomemulatorBlock).animate({
+	       top: '50%', width: '60%', height: '30%'
+	   }, { duration: 200, queue: false });
+   };
 };
 
 function newromBlock(top, emulator, gameNumber) {
