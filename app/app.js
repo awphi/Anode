@@ -1,3 +1,10 @@
+/*| app.js |*/
+/*
+	This is the main script that controls the frontend - everything else in this is just used to run this semi-short script.
+	It's pretty easy to understand and could definitely se some optimisation so if you see something and think it could be done
+	better just make a pull request and I'll probably approve it - it's all a learning process.
+*/
+
 var path = require('path');
 var fs = require('fs');
 
@@ -176,11 +183,10 @@ function newromBlock(top, emulator, gameNumber) {
 	counter.innerHTML = '[' + String(gameNumber + 1) + '/' + String(emulator.roms.length) + ']';
 	div.appendChild(counter);
 
+	div.style.top = top;
 	document.getElementById('body').appendChild(div);
 	var els = document.getElementsByClassName('romBlock');
-	var recent = els[els.length - 1];
-	recent.style.top = top;
-	return recent;
+	return els[els.length - 1];
 };
 
 function scrollRoms(arg) {
@@ -282,6 +288,7 @@ function openGame() {
 
 };
 
+//Controls for this
 window.onkeydown = function(e) {
 	var code = e.keyCode ? e.keyCode : e.which;
 	if(code == 38 || code == 40) {

@@ -6,6 +6,7 @@ const BrowserWindow = electron.BrowserWindow
 
 const path = require('path')
 const url = require('url')
+const electronLocalShortcut = require('electron-localshortcut')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -22,10 +23,10 @@ function createWindow () {
     slashes: true
   }))
 
-  mainWindow.webContents.openDevTools();
-
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  //Can register global hotkeys here for the window
+  electronLocalShortcut.register(mainWindow, 'F12', function(){
+      mainWindow.webContents.toggleDevTools();
+  })
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
