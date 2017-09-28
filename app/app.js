@@ -8,7 +8,6 @@ var allowAnimation = false;
 var scroll = 'emulator';
 var currentRom = 0;
 
-//Init emulator queue - reloaded when reloadFIles is called
 var emulatorQueue;
 
 //Wait till page has loaded by waiting for jQuery then allow usage
@@ -32,7 +31,6 @@ $(function() {
 //Syncronous so it should be run before allowing the user to begin interacting
 function reloadFiles() {
 	emulators = fs.readdirSync('./Emulators');
-	console.log(emulators);
 	for(var i = 0; i < emulators.length; i ++) {
 		emulators[i] = new String(emulators[i]);
 		var roms = fs.readdirSync('./Emulators/' + emulators[i] + '/roms');
@@ -42,7 +40,8 @@ function reloadFiles() {
 			emulators[i].roms[j].media = './Emulators/' + emulators[i] + '/roms/' + roms[j] + '/media.png';
 			if(fs.existsSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.txt')) {
 				var readIn = fs.readFileSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.txt', 'utf8');
-				emulators[i].roms[j].metadata = readIn.substring(0,600);
+				//Double verify - scraper will only get first 600 chars anyway
+				emulators[i].roms[j].metadata = readIn.substring(0,600) + '...';
 			} else {
 				emulators[i].roms[j].metadata = 'Sorry, no description available for this game currently!';
 			}
@@ -122,7 +121,7 @@ function scrollEmulator(arg) {
        top: goal
     }, { duration: 200, queue: false });
 
-	//Do this using class selectors & assigning element property to emulatorQueue
+	//Do this using class selectors & assigning element property to emulatorQueue because this is DESGUSTIN'
 	if(arg == 'down') {
 	    $(highemulatorBlock).animate({
 	       top: '50%', width: '60%', height: '30%'
@@ -173,6 +172,10 @@ function newromBlock(top, emulator, gameNumber) {
 	metadata.innerHTML = emulator.roms[gameNumber].metadata;
 	div.appendChild(metadata);
 
+	var counter = document.createElement('h2');
+	counter.innerHTML = '[' + String(gameNumber + 1) + '/' + String(emulator.roms.length) + ']';
+	div.appendChild(counter);
+
 	document.getElementById('body').appendChild(div);
 	var els = document.getElementsByClassName('romBlock');
 	var recent = els[els.length - 1];
@@ -210,14 +213,13 @@ function scrollRoms(arg) {
 	   top: goal
    }, { duration: 200, queue: false, done: function() {
 	   $(current).remove();
+	   allowAnimation = true;
    } });
 
    //New one in
    $(newBlock).animate({
 	  top: '50%'
-  }, { duration: 200, queue: false, done: function() {
-	  allowAnimation = true;
-  } });
+  }, { duration: 200, queue: false });
 };
 
 //Opens or closes the rom menu - arg is either 'open' or 'close'
