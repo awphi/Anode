@@ -12,6 +12,7 @@
     "electron-prebuilt": "^1.4.13"
   },
   "dependencies": {
+    "child_process": "^1.0.2",
     "electron-localshortcut": "^2.0.2"
   }
 }

@@ -14,7 +14,9 @@ let mainWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600, fullscreen: true})
+  mainWindow = new BrowserWindow({width: 800, height: 600, fullscreen: true, alwaysOnTop: true})
+
+  mainWindow.setMenu(null);
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -22,6 +24,8 @@ function createWindow () {
     protocol: 'file:',
     slashes: true
   }))
+
+  mainWindow.webContents.toggleDevTools();
 
   //Can register global hotkeys here for the window
   electronLocalShortcut.register(mainWindow, 'F12', function(){

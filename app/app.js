@@ -5,9 +5,11 @@
 	better just make a pull request and I'll probably approve it - it's all a learning process.
 */
 
-var path = require('path');
-var fs = require('fs');
-
+const path = require('path');
+const fs = require('fs');
+const child = require('child_process');
+var emulatorProc;
+var app = require('electron');
 //Load up some intial variables
 var emulators = [];
 
@@ -40,18 +42,20 @@ function reloadFiles() {
 	emulators = fs.readdirSync('./Emulators');
 	for(var i = 0; i < emulators.length; i ++) {
 		emulators[i] = new String(emulators[i]);
-		var roms = fs.readdirSync('./Emulators/' + emulators[i] + '/roms');
-		emulators[i].roms = [];
-		for(var j = 0; j < roms.length; j ++) {
-			emulators[i].roms[j] = new String(roms[j]);
-			emulators[i].roms[j].media = './Emulators/' + emulators[i] + '/roms/' + roms[j] + '/media.png';
-			if(fs.existsSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.txt')) {
-				var readIn = fs.readFileSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.txt', 'utf8');
-				//Double verify - scraper will only get first 600 chars anyway
-				emulators[i].roms[j].metadata = readIn.substring(0,600) + '...';
-			} else {
-				emulators[i].roms[j].metadata = 'Sorry, no description available for this game currently!';
-			}
+		if(fs.existsSync('./Emulators/' + emulators[i] + '/roms')) {
+			var roms = fs.readdirSync('./Emulators/' + emulators[i] + '/roms');
+			emulators[i].roms = [];
+			for(var j = 0; j < roms.length; j ++) {
+				emulators[i].roms[j] = new String(roms[j]);
+				emulators[i].roms[j].media = './Emulators/' + emulators[i] + '/roms/' + roms[j] + '/media.png';
+				if(fs.existsSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.txt')) {
+					var readIn = fs.readFileSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.txt', 'utf8');
+					//Double verify - scraper will only get first 600 chars anyway
+					emulators[i].roms[j].metadata = readIn.substring(0,600) + '...';
+				} else {
+					emulators[i].roms[j].metadata = 'Sorry, no description available for this game currently!';
+				}
+			};
 		};
 	};
 	emulatorQueue = [];
@@ -282,10 +286,36 @@ function romsMenu(arg) {
 		} });
    };
 };
-
 //Starts emulator for given game
-function openGame() {
-
+function openGame(gameConsole, game) {
+    if(emulatorProc != null) {
+        return;
+    };
+    console.log(gameConsole + ' ' + game);
+    var gamePath;
+    if(fs.existsSync('./Emulators/' + gameConsole + '/roms/' + game)) {
+        var cont = fs.readdirSync('./Emulators/' + gameConsole + '/roms/' + game);
+        for(var i = 0; i < cont.length; i ++) {
+            console.log(cont[i].split('.'));
+            if(cont[i].split('.')[0] == 'rom') {
+                gamePath = './Emulators/' + gameConsole + '/roms/' + game + '/' + cont[i];
+            }
+        };
+    };
+    if(gamePath == null) {
+        return;
+    };
+    emulatorProc = execFile('./Emulators/' + gameConsole+ '/emulator/Project64.exe', ['./Emulators/N64/roms/Banjo Kazooie/rom.n64'], (error, stdout, stderr) => {
+      if (error) {
+        throw error;
+      }
+      //Refocus on close
+      app.remote.getCurrentWindow().focus();
+      app.remote.getCurrentWindow().setAlwaysOnTop(true);
+      emulatorProc = null;
+      console.log('xx' + stdout);
+    });
+    app.remote.getCurrentWindow().setAlwaysOnTop(false);
 };
 
 //Controls for this
@@ -307,7 +337,7 @@ window.onkeydown = function(e) {
 		if(scroll == 'emulator') {
 			romsMenu('open');
 		} else if(scroll == 'roms') {
-			openGame();
+			openGame(emulators[emulatorQueue[1]],emulators[emulatorQueue[1]].roms[currentRom]);
 		};
 	} else if (code == 37 && scroll == 'roms') {
 		romsMenu('close');
