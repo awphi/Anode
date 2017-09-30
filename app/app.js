@@ -8,8 +8,8 @@
 const path = require('path');
 const fs = require('fs');
 const child = require('child_process');
-var emulatorProc;
-var app = require('electron');
+const processWindows = require("node-process-windows");
+const app = require('electron');
 //Load up some intial variables
 var emulators = [];
 
@@ -18,6 +18,7 @@ var scroll = 'emulator';
 var currentRom = 0;
 
 var emulatorQueue;
+var emulatorProc;
 
 //Wait till page has loaded by waiting for jQuery then allow usage
 $(function() {
@@ -293,6 +294,7 @@ function openGame(gameConsole, game) {
     };
     console.log(gameConsole + ' ' + game);
     var gamePath;
+	var emulatorPath;
     if(fs.existsSync('./Emulators/' + gameConsole + '/roms/' + game)) {
         var cont = fs.readdirSync('./Emulators/' + gameConsole + '/roms/' + game);
         for(var i = 0; i < cont.length; i ++) {
@@ -302,20 +304,26 @@ function openGame(gameConsole, game) {
             }
         };
     };
-    if(gamePath == null) {
+    if(gamePath == null) { // || emulatorPath == null) {
         return;
     };
-    emulatorProc = execFile('./Emulators/' + gameConsole+ '/emulator/Project64.exe', ['./Emulators/N64/roms/Banjo Kazooie/rom.n64'], (error, stdout, stderr) => {
+	//Open emulator
+    emulatorProc = child.execFile('./Emulators/' + gameConsole+ '/emulator/Project64.exe', ['./Emulators/N64/roms/Banjo Kazooie/rom.n64'], (error, stdout, stderr) => {
       if (error) {
         throw error;
       }
       //Refocus on close
       app.remote.getCurrentWindow().focus();
-      app.remote.getCurrentWindow().setAlwaysOnTop(true);
+	  app.remote.getCurrentWindow().setAlwaysOnTop(true);
       emulatorProc = null;
-      console.log('xx' + stdout);
+      console.log(stdout);
     });
-    app.remote.getCurrentWindow().setAlwaysOnTop(false);
+	//Wait 5 secs
+	window.setTimeout(function(){
+		console.log('AYO');
+		app.remote.getCurrentWindow().setAlwaysOnTop(false);
+		processWindows.focusWindow("Project64");
+	}, 5000);
 };
 
 //Controls for this

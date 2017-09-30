@@ -1,6 +1,6 @@
 {
   "name": "Annode",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "by Annode co.",
   "main": "main.js",
   "scripts": {
@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "child_process": "^1.0.2",
-    "electron-localshortcut": "^2.0.2"
+    "electron-localshortcut": "^2.0.2",
+    "node-process-windows": "0.0.2",
+    "nw": "^0.25.4"
   }
 }
