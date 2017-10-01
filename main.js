@@ -1,6 +1,7 @@
 const electron = require('electron')
 // Module to control application life.
 const app = electron.app
+const {globalShortcut} = require('electron')
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
 
@@ -8,13 +9,16 @@ const path = require('path')
 const url = require('url')
 const electronLocalShortcut = require('electron-localshortcut')
 
+//Register it here 
+var emulatorProc;
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600, fullscreen: true, alwaysOnTop: true})
+  mainWindow = new BrowserWindow({width: 800, height: 600, fullscreen: true})
 
   mainWindow.setMenu(null);
 
@@ -46,13 +50,24 @@ function createWindow () {
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow)
 
-// Quit when all windows are closed.
-app.on('window-all-closed', function () {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit()
+app.on('ready', () => {
+
+  const ret = globalShortcut.register('F2', () => {
+      if(!emulatorProc == null) {
+          emulatorProc.kill('SIGNIT');
+      }
+  })
+
+  if (!ret) {
+    console.log('registration failed')
   }
+
+  // Check whether a shortcut is registered.
+  console.log(globalShortcut.isRegistered('F2'))
+})
+
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll()
 })
 
 app.on('activate', function () {

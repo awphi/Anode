@@ -18,7 +18,6 @@ var scroll = 'emulator';
 var currentRom = 0;
 
 var emulatorQueue;
-var emulatorProc;
 
 //Wait till page has loaded by waiting for jQuery then allow usage
 $(function() {
@@ -308,21 +307,29 @@ function openGame(gameConsole, game) {
         return;
     };
 	//Open emulator
-    emulatorProc = child.execFile('./Emulators/' + gameConsole+ '/emulator/Project64.exe', ['./Emulators/N64/roms/Banjo Kazooie/rom.n64'], (error, stdout, stderr) => {
+	//Edit for multiple emus
+    emulatorProc = child.execFile('./Emulators/' + gameConsole + '/emulator/Project64.exe', ['./Emulators/N64/roms/Banjo Kazooie/rom.n64'], (error, stdout, stderr) => {
       if (error) {
         throw error;
       }
       //Refocus on close
       app.remote.getCurrentWindow().focus();
-	  app.remote.getCurrentWindow().setAlwaysOnTop(true);
       emulatorProc = null;
       console.log(stdout);
     });
+	app.remote.getCurrentWindow().focus();
 	//Wait 5 secs
 	window.setTimeout(function(){
 		console.log('AYO');
-		app.remote.getCurrentWindow().setAlwaysOnTop(false);
-		processWindows.focusWindow("Project64");
+		var activeProcesses = processWindows.getProcesses(function(err, processes) {
+			//Edit for multiple emus
+        var emulatorProcesses = processes.filter(p => p.processName.indexOf("Project64") >= 0);
+
+        // If there is a chrome process active, focus the first window
+        if(emulatorProcesses.length > 0) {
+            processWindows.focusWindow(emulatorProcesses[0]);
+        }
+    });
 	}, 5000);
 };
 
