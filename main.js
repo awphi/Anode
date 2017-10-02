@@ -9,9 +9,6 @@ const path = require('path')
 const url = require('url')
 const electronLocalShortcut = require('electron-localshortcut')
 
-//Register it here 
-var emulatorProc;
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
@@ -50,12 +47,20 @@ function createWindow () {
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow)
 
+app.on('activate', function () {
+  // On OS X it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (mainWindow === null) {
+    createWindow()
+  }
+})
+
+// In this file you can include the rest of your app's specific main process
+// code. You can also put them in separate files and require them here.
 app.on('ready', () => {
 
   const ret = globalShortcut.register('F2', () => {
-      if(!emulatorProc == null) {
-          emulatorProc.kill('SIGNIT');
-      }
+      mainWindow.webContents.send('childProc', 'KILL')
   })
 
   if (!ret) {
@@ -69,14 +74,3 @@ app.on('ready', () => {
 app.on('will-quit', () => {
   globalShortcut.unregisterAll()
 })
-
-app.on('activate', function () {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
-    createWindow()
-  }
-})
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.

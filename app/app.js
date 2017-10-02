@@ -10,18 +10,20 @@ const fs = require('fs');
 const child = require('child_process');
 const processWindows = require("node-process-windows");
 const app = require('electron');
+const {ipcRenderer} = require('electron');
 //Load up some intial variables
 var emulators = [];
 
 var allowAnimation = false;
 var scroll = 'emulator';
 var currentRom = 0;
+var emulatorProc;
 
 var emulatorQueue;
-
 //Wait till page has loaded by waiting for jQuery then allow usage
 $(function() {
 	reloadFiles();
+	app.remote.getCurrentWindow().setAlwaysOnTop(true);
 	var topVal = 20;
 	for(var i = 0; i < 3; i ++) {
 		var newEm  = newemulatorBlock(topVal + '%',emulatorQueue[i]);
@@ -309,28 +311,27 @@ function openGame(gameConsole, game) {
 	//Open emulator
 	//Edit for multiple emus
     emulatorProc = child.execFile('./Emulators/' + gameConsole + '/emulator/Project64.exe', ['./Emulators/N64/roms/Banjo Kazooie/rom.n64'], (error, stdout, stderr) => {
-      if (error) {
-        throw error;
-      }
       //Refocus on close
-      app.remote.getCurrentWindow().focus();
-      emulatorProc = null;
+	  emulatorProc = null;
+	  app.remote.getCurrentWindow().setAlwaysOnTop(true);
+      processWindows.focusWindow("Annode");
       console.log(stdout);
+	  if (error) {
+		throw error;
+	  }
     });
-	app.remote.getCurrentWindow().focus();
 	//Wait 5 secs
 	window.setTimeout(function(){
-		console.log('AYO');
-		var activeProcesses = processWindows.getProcesses(function(err, processes) {
+			console.log('Focus on emu time.');
+			app.remote.getCurrentWindow().setAlwaysOnTop(false);
+			var activeProcesses = processWindows.getProcesses(function(err, processes) {
 			//Edit for multiple emus
-        var emulatorProcesses = processes.filter(p => p.processName.indexOf("Project64") >= 0);
-
-        // If there is a chrome process active, focus the first window
-        if(emulatorProcesses.length > 0) {
-            processWindows.focusWindow(emulatorProcesses[0]);
-        }
-    });
-	}, 5000);
+	        var emulatorProcesses = processes.filter(p => p.processName.indexOf("Project64") >= 0);
+	        if(emulatorProcesses.length > 0) {
+	            processWindows.focusWindow(emulatorProcesses[0]);
+	        }
+    	});
+	}, 3000);
 };
 
 //Controls for this
@@ -358,3 +359,11 @@ window.onkeydown = function(e) {
 		romsMenu('close');
 	};
 };
+
+ipcRenderer.on('childProc', (event, arg) => {
+	console.log(arg);
+	if(emulatorProc != null) {
+		emulatorProc.kill();
+
+	};
+});
