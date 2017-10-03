@@ -296,39 +296,56 @@ function openGame(gameConsole, game) {
     console.log(gameConsole + ' ' + game);
     var gamePath;
 	var emulatorPath;
+	var emulatorName;
     if(fs.existsSync('./Emulators/' + gameConsole + '/roms/' + game)) {
         var cont = fs.readdirSync('./Emulators/' + gameConsole + '/roms/' + game);
         for(var i = 0; i < cont.length; i ++) {
             console.log(cont[i].split('.'));
             if(cont[i].split('.')[0] == 'rom') {
-                gamePath = './Emulators/' + gameConsole + '/roms/' + game + '/' + cont[i];
+                gamePath = __dirname + '\\Emulators\\' + gameConsole + '\\roms\\' + game + '\\' + cont[i];
+				break;
             }
         };
     };
-    if(gamePath == null) { // || emulatorPath == null) {
+	if(fs.existsSync('./Emulators/' + gameConsole + '/emulator')) {
+        var cont = fs.readdirSync('./Emulators/' + gameConsole + '/emulator');
+        for(var i = 0; i < cont.length; i ++) {
+            console.log(cont[i].split('.'));
+            if(cont[i].split('.')[1] == 'exe') {
+                emulatorPath = __dirname + '\\Emulators\\' + gameConsole + '\\emulator\\' + cont[i];
+				emulatorName = cont[i].split('.')[0];
+				break;
+            }
+        };
+    };
+    if(gamePath == null || emulatorPath == null) {
         return;
     };
 	//Open emulator
 	//Edit for multiple emus
-    emulatorProc = child.execFile('./Emulators/' + gameConsole + '/emulator/Project64.exe', ['./Emulators/N64/roms/Banjo Kazooie/rom.n64'], (error, stdout, stderr) => {
+    emulatorProc = child.execFile(emulatorPath, [gamePath, '-fullscreen'], (error, stdout, stderr) => {
       //Refocus on close
 	  emulatorProc = null;
+	  processWindows.focusWindow("Annode");
 	  app.remote.getCurrentWindow().setAlwaysOnTop(true);
-      processWindows.focusWindow("Annode");
       console.log(stdout);
 	  if (error) {
 		throw error;
 	  }
     });
-	//Wait 5 secs
+	//Give it half a second for the window to open
+	window.setTimeout(function() {
+		app.remote.getCurrentWindow().setAlwaysOnTop(false);
+	},500);
+	//3 secs for it to start emulation
 	window.setTimeout(function(){
 			console.log('Focus on emu time.');
-			app.remote.getCurrentWindow().setAlwaysOnTop(false);
 			var activeProcesses = processWindows.getProcesses(function(err, processes) {
 			//Edit for multiple emus
-	        var emulatorProcesses = processes.filter(p => p.processName.indexOf("Project64") >= 0);
+	        var emulatorProcesses = processes.filter(p => p.processName.indexOf(emulatorName) >= 0);
 	        if(emulatorProcesses.length > 0) {
-	            processWindows.focusWindow(emulatorProcesses[0]);
+				console.log('Focusingg');
+	           	processWindows.focusWindow(emulatorProcesses[0]);
 	        }
     	});
 	}, 3000);
