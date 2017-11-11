@@ -5,66 +5,33 @@
 	better just make a pull request and I'll probably approve it - it's all a learning process.
 */
 
-const path = require('path');
-const fs = require('fs');
-const child = require('child_process');
-const processWindows = require("node-process-windows");
 const app = require('electron');
-const {ipcRenderer} = require('electron');
 //Load up some intial variables
-var emulators = [];
+var emulators, emulatorQueue;
 
 var allowAnimation = false;
 var scroll = 'emulator';
 var currentRom = 0;
-var emulatorProc;
 
-var emulatorQueue;
 //Wait till page has loaded by waiting for jQuery then allow usage
 $(function() {
-	reloadFiles();
+	emulators = getEmulators();
+	emulatorQueue = getQueue();
+
 	app.remote.getCurrentWindow().setAlwaysOnTop(true);
 	var topVal = 20;
 	for(var i = 0; i < 3; i ++) {
-		var newEm  = newemulatorBlock(topVal + '%',emulatorQueue[i]);
+		var newEm  = newEmulatorBlock(topVal + '%',emulatorQueue[i]);
 		if(i == 1) {
 			newEm.style.height = '30%';
 			newEm.style.width = '60%';
-		};
+		}
 		$(newEm).css('background-image', 'url(./Emulators/' + emulators[emulatorQueue[i]] + '/media.png)');
 		topVal += 30;
 	}
 	//Let's goooooo
 	allowAnimation = true;
 });
-
-//Reads in emulators/roms/all that jazz above - add in option to define Emulator files separately and DL them if they're not there
-//Syncronous so it should be run before allowing the user to begin interacting
-function reloadFiles() {
-	emulators = fs.readdirSync('./Emulators');
-	for(var i = 0; i < emulators.length; i ++) {
-		emulators[i] = new String(emulators[i]);
-		if(fs.existsSync('./Emulators/' + emulators[i] + '/roms')) {
-			var roms = fs.readdirSync('./Emulators/' + emulators[i] + '/roms');
-			emulators[i].roms = [];
-			for(var j = 0; j < roms.length; j ++) {
-				emulators[i].roms[j] = new String(roms[j]);
-				emulators[i].roms[j].media = './Emulators/' + emulators[i] + '/roms/' + roms[j] + '/media.png';
-				if(fs.existsSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.txt')) {
-					var readIn = fs.readFileSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.txt', 'utf8');
-					//Double verify - scraper will only get first 600 chars anyway
-					emulators[i].roms[j].metadata = readIn.substring(0,600) + '...';
-				} else {
-					emulators[i].roms[j].metadata = 'Sorry, no description available for this game currently!';
-				}
-			};
-		};
-	};
-	emulatorQueue = [];
-	for(var i = 0; i < emulators.length; i ++) {
-		emulatorQueue.push(i);
-	}
-};
 
 //Structure of emulators variable
 //	emulators:
@@ -81,24 +48,10 @@ function reloadFiles() {
 //				.media = media.mp4/png
 //				.metadata = metadata string
 
-//Creates a new emulatorBlock at the top or bottom by giving it's 'top' style text
-//	\-> Good values I found are -20% for top and 120% for bottom!
-function newemulatorBlock(top, id) {
-	var div = document.createElement('div');
-	div.className = 'emulatorBlock';
-	document.getElementById('body').appendChild(div);
-	var els = document.getElementsByClassName('emulatorBlock');
-	var recent = els[els.length - 1];
-	$(recent).css('background-image', 'url(./Emulators/' + emulators[id] + '/media.png)');
-	console.log(emulators[id] + ' ' + id);
-	recent.style.top = top;
-	return recent;
-}
-
 function scrollEmulator(arg) {
 	if(!allowAnimation) {
 		return;
-	};
+	}
 	allowAnimation = false;
 	var goal = '';
 	var recentemulatorBlock;
@@ -120,12 +73,12 @@ function scrollEmulator(arg) {
 		var popped = emulatorQueue.pop();
 		emulatorQueue.unshift(popped);
 		//Once we've got the new high,principle & bottom we can move the emulatorBlocks
-		recentemulatorBlock = newemulatorBlock('-20%', emulatorQueue[0]);
+		recentemulatorBlock = newEmulatorBlock('-20%', emulatorQueue[0]);
 		goal = '20%';
 	} else {
 		var shifted = emulatorQueue.shift();
 		emulatorQueue.push(shifted);
-		recentemulatorBlock = newemulatorBlock('120%', emulatorQueue[2]);
+		recentemulatorBlock = newEmulatorBlock('120%', emulatorQueue[2]);
 		goal = '80%';
 	}
 	//This executes all the animations at once - iss beautiful
@@ -165,40 +118,13 @@ function scrollEmulator(arg) {
 		$(bottomemulatorBlock).animate({
 	       top: '50%', width: '60%', height: '30%'
 	   }, { duration: 200, queue: false });
-   };
-};
-
-function newromBlock(top, emulator, gameNumber) {
-	var div = document.createElement('div');
-	div.className = 'romBlock';
-
-	var title = document.createElement('h1');
-	title.innerHTML = emulator.roms[gameNumber];
-	div.appendChild(title);
-
-	var img = document.createElement('img');
-	img.className = 'romMedia';
-	$(img).attr("src", emulator.roms[gameNumber].media);
-	div.appendChild(img);
-
-	var metadata = document.createElement('p');
-	metadata.innerHTML = emulator.roms[gameNumber].metadata;
-	div.appendChild(metadata);
-
-	var counter = document.createElement('h2');
-	counter.innerHTML = '[' + String(gameNumber + 1) + '/' + String(emulator.roms.length) + ']';
-	div.appendChild(counter);
-
-	div.style.top = top;
-	document.getElementById('body').appendChild(div);
-	var els = document.getElementsByClassName('romBlock');
-	return els[els.length - 1];
-};
+   }
+}
 
 function scrollRoms(arg) {
 	if(!allowAnimation) {
 		return;
-	};
+	}
 	allowAnimation = false;
 
 	var current = document.getElementsByClassName('romBlock')[0];
@@ -208,15 +134,15 @@ function scrollRoms(arg) {
 		currentRom ++;
 		if(currentRom > emulators[emulatorQueue[1]].roms.length - 1) {
 			currentRom = 0;
-		};
-		var newBlock = newromBlock('-85%',emulators[emulatorQueue[1]],currentRom);
+		}
+		var newBlock = newRomBlock('-85%',emulators[emulatorQueue[1]],currentRom);
 		goal = '185%';
 	} else if(arg == 'up') {
 		currentRom --;
 		if(currentRom < 0) {
 			currentRom = emulators[emulatorQueue[1]].roms.length - 1;
-		};
-		var newBlock = newromBlock('185%',emulators[emulatorQueue[1]],currentRom);
+		}
+		var newBlock = newRomBlock('185%',emulators[emulatorQueue[1]],currentRom);
 		goal = '-85%';
 	}
 
@@ -232,13 +158,13 @@ function scrollRoms(arg) {
    $(newBlock).animate({
 	  top: '50%'
   }, { duration: 200, queue: false });
-};
+}
 
 //Opens or closes the rom menu - arg is either 'open' or 'close'
 function romsMenu(arg) {
 	if(!allowAnimation) {
 		return;
-	};
+	}
 	allowAnimation = false;
 
 	var els = document.getElementsByClassName('emulatorBlock');
@@ -265,7 +191,7 @@ function romsMenu(arg) {
 
 		//emulators[principle].roms
 		//Bring in rom menu
-		var newRom = newromBlock('-85%',emulators[emulatorQueue[1]], 0);
+		var newRom = newRomBlock('-85%',emulators[emulatorQueue[1]], 0);
 		$(newRom).animate({
 		   top: '50%'
 	   }, { duration: 200, queue: false });
@@ -286,101 +212,5 @@ function romsMenu(arg) {
 			$('.romBlock').remove();
 			allowAnimation = true;
 		} });
-   };
-};
-//Starts emulator for given game
-function openGame(gameConsole, game) {
-    if(emulatorProc != null) {
-        return;
-    };
-    console.log(gameConsole + ' ' + game);
-    var gamePath;
-	var emulatorPath;
-	var emulatorName;
-    if(fs.existsSync('./Emulators/' + gameConsole + '/roms/' + game)) {
-        var cont = fs.readdirSync('./Emulators/' + gameConsole + '/roms/' + game);
-        for(var i = 0; i < cont.length; i ++) {
-            console.log(cont[i].split('.'));
-            if(cont[i].split('.')[0] == 'rom') {
-                gamePath = __dirname + '\\Emulators\\' + gameConsole + '\\roms\\' + game + '\\' + cont[i];
-				break;
-            }
-        };
-    };
-	if(fs.existsSync('./Emulators/' + gameConsole + '/emulator')) {
-        var cont = fs.readdirSync('./Emulators/' + gameConsole + '/emulator');
-        for(var i = 0; i < cont.length; i ++) {
-            console.log(cont[i].split('.'));
-            if(cont[i].split('.')[1] == 'exe') {
-                emulatorPath = __dirname + '\\Emulators\\' + gameConsole + '\\emulator\\' + cont[i];
-				emulatorName = cont[i].split('.')[0];
-				break;
-            }
-        };
-    };
-    if(gamePath == null || emulatorPath == null) {
-        return;
-    };
-	//Open emulator
-	//Edit for multiple emus
-    emulatorProc = child.execFile(emulatorPath, [gamePath, '-fullscreen'], (error, stdout, stderr) => {
-      //Refocus on close
-	  emulatorProc = null;
-	  processWindows.focusWindow("Annode");
-	  app.remote.getCurrentWindow().setAlwaysOnTop(true);
-      console.log(stdout);
-	  if (error) {
-		throw error;
-	  }
-    });
-	//Give it half a second for the window to open
-	window.setTimeout(function() {
-		app.remote.getCurrentWindow().setAlwaysOnTop(false);
-	},500);
-	//3 secs for it to start emulation
-	window.setTimeout(function(){
-			console.log('Focus on emu time.');
-			var activeProcesses = processWindows.getProcesses(function(err, processes) {
-			//Edit for multiple emus
-	        var emulatorProcesses = processes.filter(p => p.processName.indexOf(emulatorName) >= 0);
-	        if(emulatorProcesses.length > 0) {
-				console.log('Focusingg');
-	           	processWindows.focusWindow(emulatorProcesses[0]);
-	        }
-    	});
-	}, 3000);
-};
-
-//Controls for this
-window.onkeydown = function(e) {
-	var code = e.keyCode ? e.keyCode : e.which;
-	if(code == 38 || code == 40) {
-		var dir;
-		if(code == 38) {
-			dir = 'up'
-		} else if (code == 40) {
-			dir = 'down'
-		}
-		if(scroll == 'emulator') {
-			scrollEmulator(dir);
-		} else if (scroll == 'roms') {
-			scrollRoms(dir)
-		}
-	} else if (code == 39) {
-		if(scroll == 'emulator') {
-			romsMenu('open');
-		} else if(scroll == 'roms') {
-			openGame(emulators[emulatorQueue[1]],emulators[emulatorQueue[1]].roms[currentRom]);
-		};
-	} else if (code == 37 && scroll == 'roms') {
-		romsMenu('close');
-	};
-};
-
-ipcRenderer.on('childProc', (event, arg) => {
-	console.log(arg);
-	if(emulatorProc != null) {
-		emulatorProc.kill();
-
-	};
-});
+   }
+}
