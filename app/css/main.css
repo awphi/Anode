@@ -1,22 +1,23 @@
+/* Used for rom title & subtitle */
 h1 {
 	color: black;
 	text-align: center;
-	padding: 10px;
 	margin: 0%;
 	font-size: 24pt;
 	font-family: pixeledregular;
 }
 
+/* Used for rom description */
 p, h2 {
 	color: black;
 	text-align: center;
-	padding: 10px;
 	font-size: 12pt;
 	font-family: 'VCR OSD Mono';
 	margin: auto;
-	margin-top: 5%;
+	padding: 8px;
 }
 
+/* Used for the rom counter */
 h2 {
 	font-size: 18pt;
 	font-family: pixeledregular;
@@ -24,11 +25,13 @@ h2 {
 }
 
 body {
-	background-image: url('../images/Checkers.png');
+	background-image: url('../images/background.png');
 }
 
 .emulatorBlock {
-	background-color: white;
+	background-image: url('../images/background.png');
+	background-repeat: no-repeat;
+	background-size: cover;
 	background-size: 100% 100%;
 	position: fixed;
 	transform: translate(-50%, -50%);
@@ -45,7 +48,7 @@ body {
 }
 
 .romBlock {
-	background-color: white;
+	background-image: url('../images/background.png');
 	position: fixed;
 	transform: translate(-50%, -50%);
 	left: 70%;
@@ -69,10 +72,7 @@ body {
 	background-size: 100% 100%;
 	width: 80%;
 	height: 40%;
-	padding: 0;
 	margin: auto;
-	margin-bottom: 0;
-	margin-top: 5%;
 	border-radius: 10%;
 	border-style: solid;
 	border-color: rgba(0,0,0,1);

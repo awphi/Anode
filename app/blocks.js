@@ -20,13 +20,31 @@ function newRomBlock(top, emulator, gameNumber) {
 	title.innerHTML = emulator.roms[gameNumber];
 	div.appendChild(title);
 
+	var subtitle = document.createElement('h1');
+	$(subtitle).css('color','rgba(0,0,0,0.5)');
+	$(subtitle).css('font-size','14pt');
+	subtitle.innerHTML = emulator.roms[gameNumber].metadata.developer + ' - ' + emulator;
+	div.appendChild(subtitle);
+
 	var img = document.createElement('img');
 	img.className = 'romMedia';
 	$(img).attr('src', emulator.roms[gameNumber].media);
 	div.appendChild(img);
 
+	var prop = document.createElement('p');
+	prop.innerHTML = '<b>Players:</b> ' + emulator.roms[gameNumber].metadata.players;
+	div.appendChild(prop);
+
+	prop = document.createElement('p');
+	prop.innerHTML = '<b>Release:</b> ' + emulator.roms[gameNumber].metadata.release;
+	div.appendChild(prop);
+
+	prop = document.createElement('p');
+	prop.innerHTML = '<b>Genres:</b> ' + emulator.roms[gameNumber].metadata.genres;
+	div.appendChild(prop);
+
 	var metadata = document.createElement('p');
-	metadata.innerHTML = emulator.roms[gameNumber].metadata;
+	metadata.innerHTML = emulator.roms[gameNumber].metadata.description;
 	div.appendChild(metadata);
 
 	var counter = document.createElement('h2');
@@ -37,4 +55,8 @@ function newRomBlock(top, emulator, gameNumber) {
 	document.getElementById('body').appendChild(div);
 	var els = document.getElementsByClassName('romBlock');
 	return els[els.length - 1];
+}
+
+function capitaliseFirst(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
 }

@@ -37,12 +37,11 @@ function getEmulators() {
 			for(var j = 0; j < roms.length; j ++) {
 				emulators[i].roms[j] = new String(roms[j]);
 				emulators[i].roms[j].media = './Emulators/' + emulators[i] + '/roms/' + roms[j] + '/media.png';
-				if(fs.existsSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.txt')) {
-					var readIn = fs.readFileSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.txt', 'utf8');
+				if(fs.existsSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.yml')) {
 					//Double verify - scraper will only get first 600 chars anyway
-					emulators[i].roms[j].metadata = readIn.substring(0,600) + '...';
+					emulators[i].roms[j].metadata = yaml.safeLoad(fs.readFileSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.yml', 'utf8'));
 				} else {
-					emulators[i].roms[j].metadata = 'Sorry, no description available for this game currently!';
+					emulators[i].roms[j].metadata = {description:"No description available currently!", developer:"Unknown Developer", release:"Unkown",players:"Unknown",genres:"Unknown"};
 				}
 			}
 		}
