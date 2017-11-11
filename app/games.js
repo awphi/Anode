@@ -10,26 +10,31 @@ function openGame(gameConsole, game) {
     if(emulatorProc != null) {
         return;
     }
-    console.log(gameConsole + ' ' + game);
+
+    //Get paths
 	var emulatorPath = getEmulatorPath(gameConsole);
 	var gamePath = getRomPath(gameConsole, game);
-
     if(gamePath == null || emulatorPath == null) {
         return;
     }
 
-    emulatorProc = child.execFile(emulatorPath, [gamePath, "-fullscreen"], (error, stdout, stderr) => {
+    //Read in emu config to be used in childProc
+    var config = getConfig(gameConsole, game);
+    console.log(config);
+
+    emulatorProc = child.execFile(emulatorPath, [gamePath].concat(config.cliArgs), (error, stdout, stderr) => {
 	  if (error) {
 		throw error;
 	  }
     });
 
-	//Give it half a second for the window to open
+	//Wait configured time
 	window.setTimeout(function() {
 		app.remote.getCurrentWindow().setAlwaysOnTop(false);
-	},0);
+	},config.waitTime);
 }
 
+//Listener for the press of the F2 button which will kill the proc in its tracks
 ipcRenderer.on('childProc', (event, arg) => {
 	console.log(arg);
 	if(emulatorProc != null) {

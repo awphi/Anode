@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const yaml = require('js-yaml');
 
 function getRomPath(gameConsole, game) {
 	if(fs.existsSync('./Emulators/' + gameConsole + '/roms/' + game)) {
@@ -26,9 +27,6 @@ function getEmulatorPath(gameConsole) {
     }
 }
 
-
-//Reads in emulators/roms/all that jazz above - add in option to define Emulator files separately and DL them if they're not there
-//Syncronous so it should be run before allowing the user to begin interacting
 function getEmulators() {
 	emulators = fs.readdirSync('./Emulators');
 	for(var i = 0; i < emulators.length; i ++) {
@@ -58,4 +56,17 @@ function getQueue() {
 		ret.push(i);
 	}
 	return ret;
+}
+
+function getConfig(gameConsole) {
+	var path = getEmulatorPath(gameConsole);
+	if(path != null) {
+		path = path.split(gameConsole)[0] + gameConsole + '\\config.yml';
+		try {
+			return yaml.safeLoad(fs.readFileSync(path, 'utf8'));
+		} catch (e) {
+			//Returns a default object
+			return {cliArgs:[], waitTime:500};
+		}
+	}
 }

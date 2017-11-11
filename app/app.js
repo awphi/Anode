@@ -1,14 +1,6 @@
-/*| app.js |*/
-/*
-	This is the main script that controls the frontend - everything else in this is just used to run this semi-short script.
-	It's pretty easy to understand and could definitely se some optimisation so if you see something and think it could be done
-	better just make a pull request and I'll probably approve it - it's all a learning process.
-*/
-
 const app = require('electron');
-//Load up some intial variables
-var emulators, emulatorQueue;
 
+var emulators, emulatorQueue;
 var allowAnimation = false;
 var scroll = 'emulator';
 var currentRom = 0;
@@ -29,24 +21,10 @@ $(function() {
 		$(newEm).css('background-image', 'url(./Emulators/' + emulators[emulatorQueue[i]] + '/media.png)');
 		topVal += 30;
 	}
-	//Let's goooooo
+
+	//Allow user interaction after all the sync loading
 	allowAnimation = true;
 });
-
-//Structure of emulators variable
-//	emulators:
-//		- [.roms]:
-//		- N64
-//		- SNES
-//		- NES
-//		- Gamecube:
-//			[.games]:
-//			- Game #1
-//			- Game #2:
-//				.boxart = boxart.png
-//				.rom = rom.rom
-//				.media = media.mp4/png
-//				.metadata = metadata string
 
 function scrollEmulator(arg) {
 	if(!allowAnimation) {
