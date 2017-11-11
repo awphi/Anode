@@ -11,17 +11,10 @@ h1 {
 p, h2 {
 	color: black;
 	text-align: center;
-	font-size: 12pt;
+	font-size: 14pt;
 	font-family: 'VCR OSD Mono';
-	margin: auto;
-	padding: 8px;
-}
-
-/* Used for the rom counter */
-h2 {
-	font-size: 18pt;
-	font-family: pixeledregular;
-	margin: 0;
+	margin: 0%;
+	padding: 2%;
 }
 
 body {
@@ -72,9 +65,19 @@ body {
 	background-size: 100% 100%;
 	width: 80%;
 	height: 40%;
-	margin: auto;
+	margin-left: auto;
+	margin-right: auto;
 	border-radius: 10%;
 	border-style: solid;
 	border-color: rgba(0,0,0,1);
 	border-width: 5px;
+}
+
+.romCounter {
+	font-size: 18pt;
+	font-family: pixeledregular;
+	position: absolute;
+	bottom: 0;
+	transform: translate(-50%, 0%);
+	left: 50%;
 }

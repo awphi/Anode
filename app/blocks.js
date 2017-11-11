@@ -32,15 +32,7 @@ function newRomBlock(top, emulator, gameNumber) {
 	div.appendChild(img);
 
 	var prop = document.createElement('p');
-	prop.innerHTML = '<b>Players:</b> ' + emulator.roms[gameNumber].metadata.players;
-	div.appendChild(prop);
-
-	prop = document.createElement('p');
-	prop.innerHTML = '<b>Release:</b> ' + emulator.roms[gameNumber].metadata.release;
-	div.appendChild(prop);
-
-	prop = document.createElement('p');
-	prop.innerHTML = '<b>Genres:</b> ' + emulator.roms[gameNumber].metadata.genres;
+	prop.innerHTML = '<b>Players:</b> ' + emulator.roms[gameNumber].metadata.players + '<br><b>Release:</b> ' + emulator.roms[gameNumber].metadata.release + '<br><b>Genres:</b> ' + emulator.roms[gameNumber].metadata.genres;;
 	div.appendChild(prop);
 
 	var metadata = document.createElement('p');
@@ -48,6 +40,7 @@ function newRomBlock(top, emulator, gameNumber) {
 	div.appendChild(metadata);
 
 	var counter = document.createElement('h2');
+	counter.className = 'romCounter';
 	counter.innerHTML = '[' + String(gameNumber + 1) + '/' + String(emulator.roms.length) + ']';
 	div.appendChild(counter);
 
