@@ -62,5 +62,4 @@ typings/
 .env
 
 #Decluttering
-package-lock.json
 .DS_Store
