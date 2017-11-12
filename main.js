@@ -70,13 +70,14 @@ app.on('ready', () => {
 
   globalShortcut.register('F3', () => {
 	  if(currentWindow == 'main') {
-		  currentWindow='scraper';
+		  currentWindow = 'scraper';
 		  mainWindow.loadURL(url.format({
 			pathname: path.join(__dirname, 'scraper.html'),
 			protocol: 'file:',
 			slashes: true
 		  }))
 	  } else {
+		  currentWindow = 'main';
 		  mainWindow.loadURL(url.format({
 			pathname: path.join(__dirname, 'index.html'),
 			protocol: 'file:',

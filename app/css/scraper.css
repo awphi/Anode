@@ -15,6 +15,16 @@ p, h2 {
 	padding: 2%;
 }
 
-.radiotext {
-    margin: 10px 10px 0px 0px;
+.flexContainer {
+	position: fixed;
+	transform: translate(-50%, -50%);
+	top: 50%;
+	text-align: center;
+	width: 80%;
+	left: 50%;
+	height: 100%;
+	display: flex;
+	flex: auto;
+	flex-direction: column;
+	overflow: hidden;
 }

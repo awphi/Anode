@@ -1,18 +1,17 @@
 <head>
+	<script src="app/frameworks/jquery-3.2.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
 	<script src="app/scraper.js"></script>
 
 	<link rel="stylesheet" type="text/css" href="app/css/scraper.css">
 	<link rel="stylesheet" type="text/css" charset="utf-8" href="app/fonts/Pixelled/stylesheet.css">
 	<link rel="stylesheet" type="text/css" charset="utf-8" href="app/fonts/VCROSD/stylesheet.css">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
 </head>
 
 <body>
-	<button id="startButton" type="button" onclick="processRoms()" style="position: absolute; left: 50%; top: 50%;">Process New Roms</button>
-	<div id="results" hidden="true">
-		<h1>Scrape results for: </h1>
+	<div id="results" class="flexContainer">
+		<h1 id="scrapeTitle">Scrape results for: </h1>
 		<h2>Please select the correct one!</h2>
-		<table class="table table-responsive" id='resultsTable'>
+		<table id="resultsTable" style="width: 100%; text-align: center;">
 			<thead>
 				<tr>
 					<th>ID</th>
@@ -22,26 +21,10 @@
 					<th>Correct?</th>
 				 </tr>
 			 </thead>
-			 <tbody>
-				 <tr>
-					 <td>
-						<label class="radiotext">162</label>
-					 </td>
-					 <td>
-						<label class="radiotext">162</label>
-					 </td>
-					 <td>
-						<label class="radiotext">162</label>
-					 </td>
-					 <td>
-						<label class="radiotext">162</label>
-					 </td>
-					 <td>
-						<input type="radio" id='regular' name="optradio">
-					 </td>
-				 </tr>
+			 <tbody id='tableBody'>
 			 </tbody>
 		</table>
-		<button type="button" onclick="confirmChoice()" style="position: absolute; left: 50%;">Confirm choice</button>
+		<button type="button" onclick="confirmChoice(false)">Confirm Choice</button>
+		<button type="button" onclick="confirmChoice(true)">Skip</button>
 	</div>
 </body>
