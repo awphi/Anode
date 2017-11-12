@@ -1,3 +1,7 @@
+const path = require('path');
+const fs = require('fs');
+const yaml = require('js-yaml');
+
 function searchGamesDB(term) {
 	var ret = [];
 	$.ajax({
@@ -11,4 +15,27 @@ function searchGamesDB(term) {
 		}
 	});
 	return ret;
+}
+
+function processRoms() {
+	if(!fs.existsSync('./in')) {
+		fs.mkdirSync('./in');
+	}
+
+	if(!isDirEmpty('./in')) {
+		document.getElementById('results').hidden = false;
+		document.getElementById('startButton').hidden = true;
+		//Logic
+	} else {
+		alert('New roms directory is empty!');
+	}
+}
+
+function confirmChoice() {
+
+}
+
+function isDirEmpty(dir) {
+	var files = fs.readdirSync;
+	return !files.length;
 }

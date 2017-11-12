@@ -1,0 +1,47 @@
+<head>
+	<script src="app/scraper.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="app/css/scraper.css">
+	<link rel="stylesheet" type="text/css" charset="utf-8" href="app/fonts/Pixelled/stylesheet.css">
+	<link rel="stylesheet" type="text/css" charset="utf-8" href="app/fonts/VCROSD/stylesheet.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+</head>
+
+<body>
+	<button id="startButton" type="button" onclick="processRoms()" style="position: absolute; left: 50%; top: 50%;">Process New Roms</button>
+	<div id="results" hidden="true">
+		<h1>Scrape results for: </h1>
+		<h2>Please select the correct one!</h2>
+		<table class="table table-responsive" id='resultsTable'>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Title</th>
+					<th>Release</th>
+					<th>Platform</th>
+					<th>Correct?</th>
+				 </tr>
+			 </thead>
+			 <tbody>
+				 <tr>
+					 <td>
+						<label class="radiotext">162</label>
+					 </td>
+					 <td>
+						<label class="radiotext">162</label>
+					 </td>
+					 <td>
+						<label class="radiotext">162</label>
+					 </td>
+					 <td>
+						<label class="radiotext">162</label>
+					 </td>
+					 <td>
+						<input type="radio" id='regular' name="optradio">
+					 </td>
+				 </tr>
+			 </tbody>
+		</table>
+		<button type="button" onclick="confirmChoice()" style="position: absolute; left: 50%;">Confirm choice</button>
+	</div>
+</body>

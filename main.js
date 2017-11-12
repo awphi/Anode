@@ -9,6 +9,8 @@ const path = require('path')
 const url = require('url')
 const electronLocalShortcut = require('electron-localshortcut')
 
+var currentWindow = 'main';
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
@@ -21,24 +23,24 @@ function createWindow () {
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'index.html'),
-    protocol: 'file:',
-    slashes: true
+	pathname: path.join(__dirname, 'index.html'),
+	protocol: 'file:',
+	slashes: true
   }))
 
   mainWindow.webContents.toggleDevTools();
 
   //Can register global hotkeys here for the window
   electronLocalShortcut.register(mainWindow, 'F12', function(){
-      mainWindow.webContents.toggleDevTools();
+	  mainWindow.webContents.toggleDevTools();
   })
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    mainWindow = null
+	// Dereference the window object, usually you would store windows
+	// in an array if your app supports multi windows, this is the time
+	// when you should delete the corresponding element.
+	mainWindow = null
   })
 }
 
@@ -51,24 +53,37 @@ app.on('activate', function () {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
-    createWindow()
+	createWindow()
   }
 })
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 app.on('ready', () => {
-
-  const ret = globalShortcut.register('F2', () => {
-      mainWindow.webContents.send('childProc', 'KILL')
+  globalShortcut.register('F2', () => {
+	  mainWindow.webContents.send('childProc', 'KILL')
   })
 
-  if (!ret) {
-    console.log('registration failed')
-  }
+  globalShortcut.register('F5', () => {
+	  mainWindow.webContents.reload();
+  })
 
-  // Check whether a shortcut is registered.
-  console.log(globalShortcut.isRegistered('F2'))
+  globalShortcut.register('F3', () => {
+	  if(currentWindow == 'main') {
+		  currentWindow='scraper';
+		  mainWindow.loadURL(url.format({
+			pathname: path.join(__dirname, 'scraper.html'),
+			protocol: 'file:',
+			slashes: true
+		  }))
+	  } else {
+		  mainWindow.loadURL(url.format({
+			pathname: path.join(__dirname, 'index.html'),
+			protocol: 'file:',
+			slashes: true
+		  }))
+	  }
+  })
 })
 
 app.on('will-quit', () => {
