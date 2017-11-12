@@ -9,7 +9,6 @@
   "author": "AWPH",
   "license": "ISC",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
     "electron-prebuilt": "^1.4.13",
     "electron-rebuild": "^1.6.0"
   },
