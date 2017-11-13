@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const yaml = require('js-yaml');
+const http = require('http');
 
 var platformDict;
 var processQueue = [];
@@ -58,6 +59,13 @@ function gamesDBFetchGame(id, procObj) {
 			});
 
 			//-- Download boxart --
+			const imgUrl = String(result.getElementsByTagName('baseImgUrl')[0].innerHTML) + String($(result).find('boxart[side="front"]').text());
+			console.log(imgUrl);
+
+			var file = fs.createWriteStream(dir + "/media.png");
+			http.get(imgUrl, function(response) {
+				  response.pipe(file);
+			});
 
 			//-- Copy rom file over, rename it and delete this one! --
 			fs.createReadStream(procObj.path).pipe(fs.createWriteStream(dir + '/rom.' + procObj.fullfilename.split('.')[1]));
@@ -88,7 +96,6 @@ function processRoms() {
 		var roms = fs.readdirSync('./in');
 		for(var i = 0; i < roms.length; i ++) {
 			var filename = roms[i].split('.')[0];
-			//Do stuff with filename i.e. remove punctuation & stuff
 			processQueue.push({filename:filename, path:'./in/' + roms[i], fullfilename:roms[i]});
 		}
 		current = 0;
@@ -106,12 +113,13 @@ function confirmChoice(skip) {
 	if(!skip) {
 		const id = $('input[name=optradio]:checked')[0].parentElement.parentElement.childNodes[0].innerHTML;
 		gamesDBFetchGame(id,processQueue[current]);
-		//Make API req w/ ID of chosen game then make, copy, delete and rename all nec. files to the right places
 	}
 	current++;
+	console.log(current + ' ' + processQueue.length);
 	if(current == processQueue.length) {
 		//End of queue reached
-		document.getElementById('results').hidden = true;
+		document.getElementsByClassName('tableContainer')[0].hidden = true;
+		alert('All done!');
 		return;
 	}
 	gamesDBSearch(processQueue[current].filename);
@@ -128,6 +136,13 @@ function loadResultsToTable(results, number) {
 			}
 		} else {
 			const table = document.getElementById('tableBody');
+
+			//Clear old values
+			while (table.firstChild) {
+				table.removeChild(table.firstChild);
+			}
+
+			//Load new ones in
 			var row, cell;
 			for(var i = 0; i < results.length; i ++) {
 				row = table.insertRow(table.rows.length);
