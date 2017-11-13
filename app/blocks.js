@@ -1,17 +1,15 @@
 //Creates a new emulatorBlock at the top or bottom by giving it's 'top' style text
-//	\-> Good values I found are -20% for top and 120% for bottom!
+//	\-> Good values I found are -20% for top and 120% for bottom
 function newEmulatorBlock(top, id) {
 	var div = document.createElement('div');
 	div.className = 'emulatorBlock';
+	$(div).css('background-image', 'url(./Emulators/' + emulators[id] + '/media.png)');
+	div.style.top = top;
 	document.getElementById('body').appendChild(div);
-	var els = document.getElementsByClassName('emulatorBlock');
-	var recent = els[els.length - 1];
-	$(recent).css('background-image', 'url(./Emulators/' + emulators[id] + '/media.png)');
-	console.log(emulators[id] + ' ' + id);
-	recent.style.top = top;
-	return recent;
+	return div;
 }
 
+// TODO: Clean this up w/ jQuery asap
 function newRomBlock(top, emulator, gameNumber) {
 	var div = document.createElement('div');
 	div.className = 'romBlock';
@@ -46,10 +44,9 @@ function newRomBlock(top, emulator, gameNumber) {
 
 	div.style.top = top;
 	document.getElementById('body').appendChild(div);
-	var els = document.getElementsByClassName('romBlock');
-	return els[els.length - 1];
+	return div;
 }
 
 function capitaliseFirst(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+	return string.charAt(0).toUpperCase() + string.slice(1);
 }

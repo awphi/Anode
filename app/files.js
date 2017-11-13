@@ -8,7 +8,7 @@ function getRomPath(gameConsole, game) {
 		for(var i = 0; i < cont.length; i ++) {
 			if(cont[i].split('.')[0] == 'rom') {
 				return __dirname + '\\Emulators\\' + gameConsole + '\\roms\\' + game + '\\' + cont[i];
-		    	break;
+				break;
 			}
 		}
 	}
@@ -16,15 +16,15 @@ function getRomPath(gameConsole, game) {
 
 function getEmulatorPath(gameConsole) {
 	if(fs.existsSync('./Emulators/' + gameConsole + '/emulator')) {
-        var cont = fs.readdirSync('./Emulators/' + gameConsole + '/emulator');
-        for(var i = 0; i < cont.length; i ++) {
-            console.log(cont[i].split('.'));
-            if(cont[i].split('.')[1] == 'exe') {
-                return __dirname + '\\Emulators\\' + gameConsole + '\\emulator\\' + cont[i];
+		var cont = fs.readdirSync('./Emulators/' + gameConsole + '/emulator');
+		for(var i = 0; i < cont.length; i ++) {
+			console.log(cont[i].split('.'));
+			if(cont[i].split('.')[1] == 'exe') {
+				return __dirname + '\\Emulators\\' + gameConsole + '\\emulator\\' + cont[i];
 				break;
-            }
-        }
-    }
+			}
+		}
+	}
 }
 
 function getEmulators() {
@@ -39,7 +39,7 @@ function getEmulators() {
 				emulators[i].roms[j].media = './Emulators/' + emulators[i] + '/roms/' + roms[j] + '/media.png';
 				if(fs.existsSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.yml')) {
 					//Double verify - scraper will only get first 600 chars anyway
-					emulators[i].roms[j].metadata = yaml.safeLoad(fs.readFileSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.yml', 'utf8'));
+					emulators[i].roms[j].metadata = yaml.safeLoad(fs.readFileSync('./Emulators/' + emulators[i] + '/roms/' + roms[j] + '/metadata.yml','utf-8'));
 				} else {
 					emulators[i].roms[j].metadata = {description:"No description available currently!", developer:"Unknown Developer", release:"Unkown",players:"Unknown",genres:"Unknown"};
 				}
@@ -62,7 +62,7 @@ function getConfig(gameConsole) {
 	if(path != null) {
 		path = path.split(gameConsole)[0] + gameConsole + '\\config.yml';
 		try {
-			return yaml.safeLoad(fs.readFileSync(path, 'utf8'));
+			return yaml.safeLoad(fs.readFileSync(path),'utf-8');
 		} catch (e) {
 			//Returns a default object
 			return {cliArgs:[], waitTime:500};

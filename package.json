@@ -1,22 +1,23 @@
 {
-  "name": "Annode",
-  "version": "0.5.0",
-  "description": "by aWPh--",
-  "main": "main.js",
-  "scripts": {
-	"start": "electron ."
-  },
-  "author": "AWPH",
-  "license": "ISC",
-  "devDependencies": {
-	"electron-prebuilt": "^1.4.13",
-	"electron-rebuild": "^1.6.0"
-  },
-  "dependencies": {
-	"child_process": "^1.0.2",
-	"electron-localshortcut": "^2.0.2",
-	"js-yaml": "^3.10.0",
-	"node-gyp": "^3.6.2",
-	"node-process-windows": "0.0.2"
-  }
+ "name": "Annode",
+ "version": "0.5.0",
+ "description": "by aWPh--",
+ "main": "main.js",
+ "scripts": {
+  "start": "electron ."
+ },
+ "author": "AWPH",
+ "license": "ISC",
+ "devDependencies": {
+  "electron-prebuilt": "^1.4.13",
+  "electron-rebuild": "^1.6.0"
+ },
+ "dependencies": {
+  "child_process": "^1.0.2",
+  "electron-localshortcut": "^2.0.2",
+  "js-yaml": "^3.10.0",
+  "node-fs": "^0.1.7",
+  "node-gyp": "^3.6.2",
+  "node-process-windows": "0.0.2"
+ }
 }

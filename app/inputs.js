@@ -14,11 +14,11 @@ window.onkeydown = function(e) {
 		}
 	} else if (code == 39) {
 		if(scroll == 'emulator') {
-			romsMenu('open');
+			openRomsMenu();
 		} else if(scroll == 'roms') {
 			openGame(emulators[emulatorQueue[1]],emulators[emulatorQueue[1]].roms[currentRom]);
 		}
 	} else if (code == 37 && scroll == 'roms') {
-		romsMenu('close');
+		closeRomsMenu();
 	}
 }
