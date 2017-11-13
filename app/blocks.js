@@ -34,7 +34,7 @@ function newRomBlock(top, emulator, gameNumber) {
 	div.appendChild(prop);
 
 	var metadata = document.createElement('p');
-	metadata.innerHTML = emulator.roms[gameNumber].metadata.description;
+	metadata.innerHTML = emulator.roms[gameNumber].metadata.description.substring(0,800) + '...';
 	div.appendChild(metadata);
 
 	var counter = document.createElement('h2');
