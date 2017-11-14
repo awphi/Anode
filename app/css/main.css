@@ -1,17 +1,17 @@
 /* Used for rom title & subtitle */
-h1 {
+h1, h2 {
 	color: black;
 	text-align: center;
 	margin: 0%;
-	font-size: 30%;
+	font-size: 1.8vw;
 	font-family: pixeledregular;
 }
 
 /* Used for rom description */
-p, h2 {
+p {
 	color: black;
 	text-align: center;
-	font-size: 20%;
+	font-size: 1.5vw;
 	font-family: 'VCR OSD Mono';
 	margin: 0%;
 	padding: 2%;
@@ -72,8 +72,6 @@ body {
 }
 
 .romCounter {
-	font-size: 30%;
-	font-family: pixeledregular;
 	position: absolute;
 	bottom: 0;
 	transform: translate(-50%, 0%);

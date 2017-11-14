@@ -13,8 +13,18 @@ function newEmulatorBlock(top, id) {
 function newRomBlock(top, emulator, gameNumber) {
 	var div = document.createElement('div');
 	div.className = 'romBlock';
-
+	div.style.top = top;
 	var title = document.createElement('h1');
+
+	if(emulator.roms[gameNumber] == null) {
+		title.innerHTML = 'No games available for ' + emulator;
+		$(title).css('margin','auto');
+		$(title).css('padding','5%');
+		div.appendChild(title);
+		document.getElementById('body').appendChild(div);
+		return div;
+	}
+
 	title.innerHTML = emulator.roms[gameNumber];
 	div.appendChild(title);
 
@@ -34,7 +44,7 @@ function newRomBlock(top, emulator, gameNumber) {
 	div.appendChild(prop);
 
 	var metadata = document.createElement('p');
-	metadata.innerHTML = emulator.roms[gameNumber].metadata.description.substring(0,800) + '...';
+	metadata.innerHTML = emulator.roms[gameNumber].metadata.description.substring(0,240) + '...';
 	div.appendChild(metadata);
 
 	var counter = document.createElement('h2');
@@ -42,7 +52,6 @@ function newRomBlock(top, emulator, gameNumber) {
 	counter.innerHTML = '[' + String(gameNumber + 1) + '/' + String(emulator.roms.length) + ']';
 	div.appendChild(counter);
 
-	div.style.top = top;
 	document.getElementById('body').appendChild(div);
 	return div;
 }
