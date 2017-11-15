@@ -21,12 +21,11 @@ $(function() {
 		$(newEm).css('background-image', 'url(./Emulators/' + emulators[emulatorQueue[i]] + '/media.png)');
 		topVal += 30;
 	}
-
-	//Allow user interaction after all the sync loading
 	allowAnimation = true;
 });
 
 //Returns array w/ length 3 - 1st, 2nd, 3rd
+//TODO: Find a more elegant solution for this - less CSS dependent
 function getEmulatorBlocks() {
 	var els = document.getElementsByClassName('emulatorBlock');
 	var ret = {top:null,middle:null,bottom:null};
@@ -43,7 +42,6 @@ function getEmulatorBlocks() {
 				break;
 		}
 	}
-	console.log(ret);
 	return ret;
 }
 
@@ -56,47 +54,36 @@ function scrollEmulator(arg) {
 	//Retrieving all the currently shown emulatorBlocks and storing them in vars to animate - need to get a better way of doing this
 	var emBlocks = getEmulatorBlocks();
 
-	var goal, newBlock;
+	var goal, newBlock, topProps, middleProps, bottomProps, callback;
 	if(arg == 'down') {
 		emulatorQueue.unshift(emulatorQueue.pop());
-		//Once we've got the new high,principle & bottom we can move the emulatorBlocks
 		newBlock = newEmulatorBlock('-20%', emulatorQueue[0]);
 		goal = '20%';
 
-		$(emBlocks.top).animate({
-		   top: '50%', width: '60vw', height: '30vw'
-		}, { duration: 200, queue: false });
-
-		$(emBlocks.middle).animate({
-		   top: '80%', width: '30vw', height: '15vw'
-		}, { duration: 200, queue: false });
-
-		$(emBlocks.bottom).animate({
-		   top: '120%'
-	   }, { duration: 200, queue: false, done: function() {
-		   $(emBlocks.bottom).remove();
-		   allowAnimation = true;
-	   } });
+		topProps = {top: '50%', width: '60vw', height: '30vw'};
+		middleProps = {top: '80%', width: '30vw', height: '15vw'};
+		bottomProps = {top: '120%'};
+		callback = function() {
+			$(emBlocks.bottom).remove();
+			allowAnimation = true;
+		}
 	} else if(arg == 'up') {
 		emulatorQueue.push(emulatorQueue.shift());
 		newBlock = newEmulatorBlock('120%', emulatorQueue[2]);
 		goal = '80%';
 
-		$(emBlocks.top).animate({
-			top: '-20%'
-		 }, { duration: 200, queue: false });
-
-		$(emBlocks.middle).animate({
-		   top: '20%', width: '30vw', height: '15vw'
-		}, { duration: 200, queue: false });
-
-		$(emBlocks.bottom).animate({
-		   top: '50%', width: '60vw', height: '30vw'
-		}, { duration: 200, queue: false, done: function() {
-		  $(emBlocks.top).remove();
-		  allowAnimation = true;
-		} });
+		topProps = {top: '-20%'};
+		middleProps = {top: '20%', width: '30vw', height: '15vw'};
+		bottomProps = {top: '50%', width: '60vw', height: '30vw'};
+		callback = function() {
+			$(emBlocks.top).remove();
+			allowAnimation = true;
+		}
 	}
+
+	animateElement(emBlocks.top, topProps);
+	animateElement(emBlocks.middle, middleProps);
+	animateElement(emBlocks.bottom, bottomProps, callback);
 
 	$(newBlock).animate({
 	   top: goal
@@ -130,22 +117,27 @@ function scrollRoms(arg) {
 	}
 
 	//Old one out first
-	$(current).animate({
-	   top: goal
-   }, { duration: 200, queue: false, done: function() {
-	   $(current).remove();
-	   allowAnimation = true;
-   } });
+	animateElement(current, {top:goal}, () => $(current).remove());
 
-   //New one in
-   $(newBlock).animate({
-	  top: '50%'
-  }, { duration: 200, queue: false });
+	//New one in
+	animateElement(newBlock, {top:'50%'}, () => allowAnimation = true);
 }
 
-$('.emulatorBlock').observe('change', function(e) {
-	console.log(e);
-});
+/*
+	animateElement -> takes:
+	 - block (element we are animating)
+	 - props (an (anonymous) object representing the css properties we are animating to)
+	 - callback (a (potentinally anonymous) function to be executed on animation completion)
+	 - duration and queue are self-explanatory
+*/
+function animateElement(block, props, callback, duration = 200, queue = false) {
+	var req = $(block).animate(props, { duration: duration, queue: queue}).promise();
+	req.done(function() {
+		if(typeof(callback) == 'function') {
+			callback();
+		}
+	});
+}
 
 //Opens or closes the rom menu - arg is either 'open' or 'close'
 function openRomsMenu(arg) {
@@ -156,18 +148,12 @@ function openRomsMenu(arg) {
 
 	scroll = 'roms';
 	currentRom = 0;
+
 	//Move emulator menu to left
-	$('.emulatorBlock').animate({
-		   left: '25%', width: '30vw', height: '15vw'
-	   }, { duration: 200, queue: false, done: function() {
-		   allowAnimation = true;
-	   } });
+	animateElement($('.emulatorBlock'),{left: '25%', width: '30vw', height: '15vw'});
 
 	//Bring in rom menu
-	var newRom = newRomBlock('-85%',emulators[emulatorQueue[1]], 0);
-	$(newRom).animate({
-	   top: '50%'
-   }, { duration: 200, queue: false });
+	animateElement(newRomBlock('-85%',emulators[emulatorQueue[1]], 0),{top: '50%'}, () => allowAnimation = true);
 }
 
 function closeRomsMenu() {
@@ -175,21 +161,15 @@ function closeRomsMenu() {
 		return;
 	}
 	allowAnimation = false;
-
 	scroll = 'emulator';
+
 	//Refocus emulator menu
-	$('.emulatorBlock').animate({
-		   left: '50%'
-	   }, { duration: 200, queue: false });
-	$(getEmulatorBlocks().middle).animate({
-		   left: '50%', width: '60vw', height: '30vw'
-	   }, { duration: 200, queue: false });
+	animateElement($('.emulatorBlock'),{left:'50%'});
+	animateElement(getEmulatorBlocks().middle,{width: '60vw', height: '30vw'});
 
 	 //Move & destroy rom menus
-	 $('.romBlock').animate({
-		 left: '150%'
-	 }, { duration: 200, queue: false, done: function() {
+	 animateElement($('.romBlock'),{left:'150%'}, () => {
 		 $('.romBlock').remove();
 		 allowAnimation = true;
-	 } });
+	 });
 }
