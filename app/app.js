@@ -15,8 +15,8 @@ $(function() {
 	for(var i = 0; i < 3; i ++) {
 		var newEm  = newEmulatorBlock(topVal + '%',emulatorQueue[i]);
 		if(i == 1) {
-			newEm.style.height = '30%';
-			newEm.style.width = '60%';
+			newEm.style.height = '30vw';
+			newEm.style.width = '60vw';
 		}
 		$(newEm).css('background-image', 'url(./Emulators/' + emulators[emulatorQueue[i]] + '/media.png)');
 		topVal += 30;
@@ -64,11 +64,11 @@ function scrollEmulator(arg) {
 		goal = '20%';
 
 		$(emBlocks.top).animate({
-		   top: '50%', width: '60%', height: '30%'
+		   top: '50%', width: '60vw', height: '30vw'
 		}, { duration: 200, queue: false });
 
 		$(emBlocks.middle).animate({
-		   top: '80%', width: '30%', height: '15%'
+		   top: '80%', width: '30vw', height: '15vw'
 		}, { duration: 200, queue: false });
 
 		$(emBlocks.bottom).animate({
@@ -87,11 +87,11 @@ function scrollEmulator(arg) {
 		 }, { duration: 200, queue: false });
 
 		$(emBlocks.middle).animate({
-		   top: '20%', width: '30%', height: '15%'
+		   top: '20%', width: '30vw', height: '15vw'
 		}, { duration: 200, queue: false });
 
 		$(emBlocks.bottom).animate({
-		   top: '50%', width: '60%', height: '30%'
+		   top: '50%', width: '60vw', height: '30vw'
 		}, { duration: 200, queue: false, done: function() {
 		  $(emBlocks.top).remove();
 		  allowAnimation = true;
@@ -143,6 +143,10 @@ function scrollRoms(arg) {
   }, { duration: 200, queue: false });
 }
 
+$('.emulatorBlock').observe('change', function(e) {
+	console.log(e);
+});
+
 //Opens or closes the rom menu - arg is either 'open' or 'close'
 function openRomsMenu(arg) {
 	if(!allowAnimation) {
@@ -154,7 +158,7 @@ function openRomsMenu(arg) {
 	currentRom = 0;
 	//Move emulator menu to left
 	$('.emulatorBlock').animate({
-		   left: '25%', width: '30%', height: '15%'
+		   left: '25%', width: '30vw', height: '15vw'
 	   }, { duration: 200, queue: false, done: function() {
 		   allowAnimation = true;
 	   } });
@@ -178,7 +182,7 @@ function closeRomsMenu() {
 		   left: '50%'
 	   }, { duration: 200, queue: false });
 	$(getEmulatorBlocks().middle).animate({
-		   left: '50%', width: '60%', height: '30%'
+		   left: '50%', width: '60vw', height: '30vw'
 	   }, { duration: 200, queue: false });
 
 	 //Move & destroy rom menus

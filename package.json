@@ -1,6 +1,6 @@
 {
  "name": "Annode",
- "version": "0.5.0",
+ "version": "0.5.1",
  "description": "by aWPh--",
  "main": "main.js",
  "scripts": {
@@ -15,6 +15,7 @@
  "dependencies": {
   "child_process": "^1.0.2",
   "electron-localshortcut": "^2.0.2",
+  "jquery-observe": "^0.2.2",
   "js-yaml": "^3.10.0",
   "node-fs": "^0.1.7",
   "node-gyp": "^3.6.2",

@@ -8,69 +8,73 @@ var processQueue = [];
 var current = 0;
 
 function gamesDBSearch(term) {
-	var ret = [];
-	$.ajax({
-		url: 'http://thegamesdb.net/api/GetGamesList.php?name=' + term,
-		success: function (result) {
-			var results = result.getElementsByTagName('Game');
-			for(var i = 0; i < results.length; i ++) {
-				ret.push({id:results[i].getElementsByTagName('id')[0].innerHTML, title:results[i].getElementsByTagName('GameTitle')[0].innerHTML, release:results[i].getElementsByTagName('ReleaseDate')[0].innerHTML, platform:results[i].getElementsByTagName('Platform')[0].innerHTML});
-			}
-			loadResultsToTable(ret, current);
+	var request = $.ajax({
+		url: 'http://thegamesdb.net/api/GetGamesList.php?name=' + term
+	});
+
+	request.done(function(result) {
+		cosole.log(result);
+		var results = result.getElementsByTagName('Game');
+		var ret = [];
+		for(var i = 0; i < results.length; i ++) {
+			ret.push({id:results[i].getElementsByTagName('id')[0].innerHTML, title:results[i].getElementsByTagName('GameTitle')[0].innerHTML, release:results[i].getElementsByTagName('ReleaseDate')[0].innerHTML, platform:results[i].getElementsByTagName('Platform')[0].innerHTML});
 		}
+		loadResultsToTable(ret, current);
 	});
 }
 
 //TODO: Split this into at least 2 functions
 function gamesDBFetchGame(id, procObj) {
-	$.ajax({
-		url: 'http://thegamesdb.net/api/GetGame.php?id=' + id,
-		success: function (result) {
-			//To be used as folder name
-			const title = result.getElementsByTagName('GameTitle')[0].innerHTML;
+	var request = $.ajax({
+		url: 'http://thegamesdb.net/api/GetGame.php?id=' + id
+	});
+	request.done(function (result) {
+		//To be used as folder name
+		const title = result.getElementsByTagName('GameTitle')[0].innerHTML;
 
-			//To determine emu folder - compares against dict created on load by looking at emu configs
-			//make sure to handle nulls
-			const plat = getPlatformDir(result.getElementsByTagName('PlatformId')[0].innerHTML);
-			if (plat == null) {
-				alert('Invalid platform chosen on ' + title + ', please reopen this panel and try again!');
-				return;
-			}
-
-			const dir = plat + '/roms/' + title;
-
-			//-- Create dir --
-			if (!fs.existsSync(dir)){
-				fs.mkdirSync(dir,null,true);
-			}
-
-			//-- Metadata.yml --
-			const description = result.getElementsByTagName('Overview')[0].innerHTML;
-			const developer = result.getElementsByTagName('Developer')[0].innerHTML;
-			const release = result.getElementsByTagName('ReleaseDate')[0].innerHTML;
-			const players = result.getElementsByTagName('Players')[0].innerHTML;
-			var genres = result.getElementsByTagName('Genres')[0].childNodes[0].innerHTML;
-			for(var i = 1; i < result.getElementsByTagName('Genres')[0].childNodes.length; i ++) {
-				genres = genres + ', ' + result.getElementsByTagName('Genres')[0].childNodes[i].innerHTML;
-			}
-			const data = yaml.safeDump({description:description,developer:developer,release:release,players:players,genres:genres});
-			fs.writeFile(dir + '/metadata.yml', data, (err) => {
-				if (err) throw err;
-			});
-
-			//-- Download boxart --
-			const imgUrl = String(result.getElementsByTagName('baseImgUrl')[0].innerHTML) + String($(result).find('boxart[side="front"]').text());
-			console.log(imgUrl);
-
-			var file = fs.createWriteStream(dir + "/media.png");
-			http.get(imgUrl, function(response) {
-				  response.pipe(file);
-			});
-
-			//-- Copy rom file over, rename it and delete this one! --
-			fs.createReadStream(procObj.path).pipe(fs.createWriteStream(dir + '/rom.' + procObj.fullfilename.split('.')[1]));
-			fs.unlink(procObj.path);
+		//To determine emu folder - compares against dict created on load by looking at emu configs
+		//make sure to handle nulls
+		const plat = getPlatformDir(result.getElementsByTagName('PlatformId')[0].innerHTML);
+		if (plat == null) {
+			alert('Invalid platform chosen on ' + title + ', please reopen this panel and try again!');
+			return;
 		}
+
+		const dir = plat + '/roms/' + title;
+
+		//-- Create dir --
+		if (!fs.existsSync(dir)){
+			fs.mkdirSync(dir,null,true);
+		}
+
+		//-- Metadata.yml --
+		createMetadataFile(result, dir);
+
+		//-- Download boxart --
+		const imgUrl = String(result.getElementsByTagName('baseImgUrl')[0].innerHTML) + String($(result).find('boxart[side="front"]').text());
+		var file = fs.createWriteStream(dir + "/media.png");
+		http.get(imgUrl, function(response) {
+			  response.pipe(file);
+		});
+
+		//-- Copy rom file over, rename it and delete this one! --
+		fs.createReadStream(procObj.path).pipe(fs.createWriteStream(dir + '/rom.' + procObj.fullfilename.split('.')[1]));
+		fs.unlink(procObj.path);
+	});
+}
+
+function createMetadataFile(result, dir) {
+	const description = result.getElementsByTagName('Overview')[0].innerHTML;
+	const developer = result.getElementsByTagName('Developer')[0].innerHTML;
+	const release = result.getElementsByTagName('ReleaseDate')[0].innerHTML;
+	const players = result.getElementsByTagName('Players')[0].innerHTML;
+	var genres = result.getElementsByTagName('Genres')[0].childNodes[0].innerHTML;
+	for(var i = 1; i < result.getElementsByTagName('Genres')[0].childNodes.length; i ++) {
+		genres = genres + ', ' + result.getElementsByTagName('Genres')[0].childNodes[i].innerHTML;
+	}
+	const data = yaml.safeDump({description:description,developer:developer,release:release,players:players,genres:genres});
+	fs.writeFile(dir + '/metadata.yml', data, (err) => {
+		if (err) throw err;
 	});
 }
 
@@ -126,37 +130,40 @@ function confirmChoice(skip) {
 }
 
 function loadResultsToTable(results, number) {
-	if(number >= 0 || number < processQueue.length) {
+	if((number >= 0 || number < processQueue.length) && processQueue.length > 0) {
 		document.getElementById('scrapeTitle').innerHTML = 'Scrape results for: ' + processQueue[number].fullfilename;
+		//Clear old values
+		while (table.firstChild) {
+			table.removeChild(table.firstChild);
+		}
+
+		//Deal with no results found
 		if(results.length == 0) {
 			var row = table.insertRow(table.rows.length);
 			for(var i = 0; i < 5; i ++) {
 				cell = row.insertCell(i);
 				cell.innerHTML = 'No results found!';
 			}
-		} else {
-			const table = document.getElementById('tableBody');
+			return;
+		}
 
-			//Clear old values
-			while (table.firstChild) {
-				table.removeChild(table.firstChild);
-			}
+		//Fill in the table with the found results
+		const table = document.getElementById('tableBody');
 
-			//Load new ones in
-			var row, cell;
-			for(var i = 0; i < results.length; i ++) {
-				row = table.insertRow(table.rows.length);
-				cell = row.insertCell(0);
-				cell.innerHTML = results[i].id;
-				cell = row.insertCell(1);
-				cell.innerHTML = results[i].title;
-				cell = row.insertCell(2);
-				cell.innerHTML = results[i].release;
-				cell = row.insertCell(3);
-				cell.innerHTML = results[i].platform;
-				cell = row.insertCell(4);
-				cell.innerHTML = '<input type="radio" name="optradio">';
-			}
+		//Load new ones in
+		var row, cell;
+		for(var i = 0; i < results.length; i ++) {
+			row = table.insertRow(table.rows.length);
+			cell = row.insertCell(0);
+			cell.innerHTML = results[i].id;
+			cell = row.insertCell(1);
+			cell.innerHTML = results[i].title;
+			cell = row.insertCell(2);
+			cell.innerHTML = results[i].release;
+			cell = row.insertCell(3);
+			cell.innerHTML = results[i].platform;
+			cell = row.insertCell(4);
+			cell.innerHTML = '<input type="radio" name="optradio">';
 		}
 	}
 }
