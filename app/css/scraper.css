@@ -28,3 +28,19 @@ button {
 	min-height: 4%;
 	margin-top: 2%;
 }
+
+table {
+	font-family: 'VCR OSD Mono';
+	border-collapse: collapse;
+}
+
+td, th {
+	border: 1px solid;
+	border-color: rgb(174, 182, 191);
+	text-align: left;
+	padding: 8px;
+}
+
+tr:nth-child(even) {
+	background-color: rgb(174, 182, 191);
+}

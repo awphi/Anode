@@ -13,7 +13,6 @@ function gamesDBSearch(term) {
 	});
 
 	request.done(function(result) {
-		cosole.log(result);
 		var results = result.getElementsByTagName('Game');
 		var ret = [];
 		for(var i = 0; i < results.length; i ++) {
@@ -110,7 +109,6 @@ function processRoms() {
 }
 
 function confirmChoice(skip) {
-	console.log($('input[name=optradio]:checked').length + ' ' + skip);
 	if(!skip && $('input[name=optradio]:checked').length == 0) {
 		return;
 	}
@@ -119,7 +117,6 @@ function confirmChoice(skip) {
 		gamesDBFetchGame(id,processQueue[current]);
 	}
 	current++;
-	console.log(current + ' ' + processQueue.length);
 	if(current == processQueue.length) {
 		//End of queue reached
 		document.getElementsByClassName('tableContainer')[0].hidden = true;
@@ -132,7 +129,9 @@ function confirmChoice(skip) {
 function loadResultsToTable(results, number) {
 	if((number >= 0 || number < processQueue.length) && processQueue.length > 0) {
 		document.getElementById('scrapeTitle').innerHTML = 'Scrape results for: ' + processQueue[number].fullfilename;
+
 		//Clear old values
+		const table = document.getElementById('tableBody');
 		while (table.firstChild) {
 			table.removeChild(table.firstChild);
 		}
@@ -148,9 +147,6 @@ function loadResultsToTable(results, number) {
 		}
 
 		//Fill in the table with the found results
-		const table = document.getElementById('tableBody');
-
-		//Load new ones in
 		var row, cell;
 		for(var i = 0; i < results.length; i ++) {
 			row = table.insertRow(table.rows.length);

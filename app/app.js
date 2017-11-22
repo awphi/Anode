@@ -1,11 +1,20 @@
 const app = require('electron');
 
+//Global vars needed by other scripts too - keep on window scope
 var emulators, emulatorQueue;
-var allowAnimation = false;
-var scroll = 'emulator';
 var currentRom = 0;
 
-//Wait till page has loaded by waiting for jQuery then allow usage
+//Move into Animation.* scope
+var allowAnimation = false;
+var scroll = 'emulator';
+
+//Animation object for the script - everything animation related is to be moved into here
+// \-> This is to declutter the window obj
+const Animation = new Object();
+Animation.NORMAL_EMULATOR_BOX = {width:'30vh', height:'15vh'};
+Animation.CENTRE_EMULATOR_BOX = {width:'60vh', height:'30vh'};
+
+//Wait till page has loaded by waiting for jQuery then begin
 $(function() {
 	emulators = getEmulators();
 	emulatorQueue = getQueue();
@@ -13,10 +22,10 @@ $(function() {
 	app.remote.getCurrentWindow().setAlwaysOnTop(true);
 	var topVal = 20;
 	for(var i = 0; i < 3; i ++) {
-		var newEm  = newEmulatorBlock(topVal + '%',emulatorQueue[i]);
+		var newEm  = newEmulatorBlock(topVal + '%', emulatorQueue[i]);
 		if(i == 1) {
-			newEm.style.height = '30vw';
-			newEm.style.width = '60vw';
+			newEm.style.height = '30vh';
+			newEm.style.width = '60vh';
 		}
 		$(newEm).css('background-image', 'url(./Emulators/' + emulators[emulatorQueue[i]] + '/media.png)');
 		topVal += 30;
@@ -24,24 +33,26 @@ $(function() {
 	allowAnimation = true;
 });
 
-//Returns array w/ length 3 - 1st, 2nd, 3rd
-//TODO: Find a more elegant solution for this - less CSS dependent
+//Returns object w/ properties - top, middle and all. Names fit what they contain...
 function getEmulatorBlocks() {
 	var els = document.getElementsByClassName('emulatorBlock');
-	var ret = {top:null,middle:null,bottom:null};
+	var ret = {top:null, middle:null, bottom:null};
 	for(var i = 0; i < els.length; i ++) {
-		switch(els[i].style.top) {
-			case '20%':
+		//Floating point inaccuracies are fun
+		var num = Math.round(els[i].style.top.split('%')[0] / 10) * 10;
+		switch(num) {
+			case 20:
 				ret.top = els[i];
 				break;
-			case '50%':
+			case 50:
 				ret.middle = els[i];
 				break;
-			case '80%':
+			case 80:
 				ret.bottom = els[i];
 				break;
 		}
 	}
+	ret.all = els;
 	return ret;
 }
 
@@ -51,43 +62,28 @@ function scrollEmulator(arg) {
 	}
 	allowAnimation = false;
 
-	//Retrieving all the currently shown emulatorBlocks and storing them in vars to animate - need to get a better way of doing this
 	var emBlocks = getEmulatorBlocks();
+	var toKill;
 
-	var goal, newBlock, topProps, middleProps, bottomProps, callback;
 	if(arg == 'down') {
 		emulatorQueue.unshift(emulatorQueue.pop());
-		newBlock = newEmulatorBlock('-20%', emulatorQueue[0]);
-		goal = '20%';
+		newEmulatorBlock('-10%', emulatorQueue[0]);
 
-		topProps = {top: '50%', width: '60vw', height: '30vw'};
-		middleProps = {top: '80%', width: '30vw', height: '15vw'};
-		bottomProps = {top: '120%'};
-		callback = function() {
-			$(emBlocks.bottom).remove();
-			allowAnimation = true;
-		}
+		animateElement(emBlocks.all, {top:'+=30%'});
+		animateElement(emBlocks.top, Animation.CENTRE_EMULATOR_BOX);
+		toKill = emBlocks.bottom;
 	} else if(arg == 'up') {
 		emulatorQueue.push(emulatorQueue.shift());
-		newBlock = newEmulatorBlock('120%', emulatorQueue[2]);
-		goal = '80%';
+		newEmulatorBlock('110%', emulatorQueue[2]);
 
-		topProps = {top: '-20%'};
-		middleProps = {top: '20%', width: '30vw', height: '15vw'};
-		bottomProps = {top: '50%', width: '60vw', height: '30vw'};
-		callback = function() {
-			$(emBlocks.top).remove();
-			allowAnimation = true;
-		}
+		animateElement(emBlocks.all, {top:'-=30%'});
+		animateElement(emBlocks.bottom, Animation.CENTRE_EMULATOR_BOX);
+		toKill = emBlocks.top;
 	}
-
-	animateElement(emBlocks.top, topProps);
-	animateElement(emBlocks.middle, middleProps);
-	animateElement(emBlocks.bottom, bottomProps, callback);
-
-	$(newBlock).animate({
-	   top: goal
-	}, { duration: 200, queue: false });
+	animateElement(emBlocks.middle, Animation.NORMAL_EMULATOR_BOX, () => {
+		$(toKill).remove();
+		allowAnimation = true;
+	});
 }
 
 function scrollRoms(arg) {
@@ -105,14 +101,14 @@ function scrollRoms(arg) {
 		if(currentRom > emulators[emulatorQueue[1]].roms.length - 1) {
 			currentRom = 0;
 		}
-		newBlock = newRomBlock('-85%',emulators[emulatorQueue[1]],currentRom);
+		newBlock = newRomBlock('-85%', emulators[emulatorQueue[1]], currentRom);
 		goal = '185%';
 	} else if(arg == 'up') {
 		currentRom --;
 		if(currentRom < 0) {
 			currentRom = emulators[emulatorQueue[1]].roms.length - 1;
 		}
-		newBlock = newRomBlock('185%',emulators[emulatorQueue[1]],currentRom);
+		newBlock = newRomBlock('185%', emulators[emulatorQueue[1]], currentRom);
 		goal = '-85%';
 	}
 
@@ -139,8 +135,7 @@ function animateElement(block, props, callback, duration = 200, queue = false) {
 	});
 }
 
-//Opens or closes the rom menu - arg is either 'open' or 'close'
-function openRomsMenu(arg) {
+function openRomsMenu() {
 	if(!allowAnimation) {
 		return;
 	}
@@ -150,10 +145,11 @@ function openRomsMenu(arg) {
 	currentRom = 0;
 
 	//Move emulator menu to left
-	animateElement($('.emulatorBlock'),{left: '25%', width: '30vw', height: '15vw'});
+	animateElement($('.emulatorBlock'), {left: '20%'});
+	animateElement($('.emulatorBlock'), Animation.NORMAL_EMULATOR_BOX);
 
 	//Bring in rom menu
-	animateElement(newRomBlock('-85%',emulators[emulatorQueue[1]], 0),{top: '50%'}, () => allowAnimation = true);
+	animateElement(newRomBlock('-85%', emulators[emulatorQueue[1]], 0), {top: '50%'}, () => allowAnimation = true);
 }
 
 function closeRomsMenu() {
@@ -164,11 +160,11 @@ function closeRomsMenu() {
 	scroll = 'emulator';
 
 	//Refocus emulator menu
-	animateElement($('.emulatorBlock'),{left:'50%'});
-	animateElement(getEmulatorBlocks().middle,{width: '60vw', height: '30vw'});
+	animateElement($('.emulatorBlock'), {left:'50%'});
+	animateElement(getEmulatorBlocks().middle, Animation.CENTRE_EMULATOR_BOX);
 
 	 //Move & destroy rom menus
-	 animateElement($('.romBlock'),{left:'150%'}, () => {
+	 animateElement($('.romBlock'), {left:'150%'}, () => {
 		 $('.romBlock').remove();
 		 allowAnimation = true;
 	 });
