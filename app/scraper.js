@@ -3,8 +3,8 @@ const fs = require('fs');
 const yaml = require('js-yaml');
 const http = require('http');
 
-var platformDict;
-var processQueue = [];
+const platformDict = {};
+const processQueue = [];
 var current = 0;
 
 function gamesDBSearch(term) {
@@ -22,7 +22,6 @@ function gamesDBSearch(term) {
 	});
 }
 
-//TODO: Split this into at least 2 functions
 function gamesDBFetchGame(id, procObj) {
 	var request = $.ajax({
 		url: 'http://thegamesdb.net/api/GetGame.php?id=' + id
@@ -77,10 +76,8 @@ function createMetadataFile(result, dir) {
 	});
 }
 
-//TODO: Deal with nulls & edge cases
 function getPlatformDir(id) {
-	if(platformDict == null) {
-		platformDict = {}
+	if(Object.keys(platformDict).length == 0) {
 		var emulators = fs.readdirSync('./Emulators');
 		for(var i = 0; i < emulators.length; i ++) {
 			platformDict[String(yaml.safeLoad(fs.readFileSync('./Emulators/' + emulators[i] + '/config.yml','utf-8')).platformId)] = './Emulators/' + emulators[i];
@@ -105,6 +102,7 @@ function processRoms() {
 		gamesDBSearch(processQueue[current].filename);
 	} else {
 		alert('New roms directory is empty!');
+		document.getElementsByClassName('tableContainer')[0].hidden = true;
 	}
 }
 

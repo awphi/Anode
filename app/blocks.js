@@ -30,7 +30,7 @@ function newRomBlock(top, emulator, gameNumber) {
 
 	var subtitle = document.createElement('h1');
 	$(subtitle).css('color','rgba(0,0,0,0.5)');
-	$(subtitle).css('font-size','14pt');
+	$(subtitle).css('font-size','1.6vw');
 	subtitle.innerHTML = emulator.roms[gameNumber].metadata.developer + ' - ' + emulator;
 	div.appendChild(subtitle);
 
