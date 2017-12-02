@@ -37,7 +37,7 @@ Inputs.core.handleInputs = function(code) {
 		if(Animation.scroll == "emulator") {
 			Animation.openRomsMenu();
 		} else if(Animation.scroll == "roms") {
-			openGame(emulators[emulatorQueue[1]],emulators[emulatorQueue[1]].roms[currentRom]);
+			openGame(emulatorWheel[1], emulatorWheel[1].roms[currentRom]);
 		}
 	} else if (code == 37 && Animation.scroll == "roms") {
 		Animation.closeRomsMenu();

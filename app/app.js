@@ -1,10 +1,8 @@
 const app = require("electron");
 
 //Global vars needed by other scripts too - keep on window scope
-var emulators;
 var currentRom = 0;
-const emulatorQueue = [];
-var emulatorXYZ = [];
+var emulatorWheel;
 
 //Animation object for the script - everything animation related is to be moved into here
 // \-> This is to declutter the window obj
@@ -21,24 +19,13 @@ function AnimationController() {
 //Wait till page has loaded by waiting for jQuery then begin
 $(function() {
 	app.remote.getCurrentWindow().setAlwaysOnTop(true);
-
-	emulators = Files.getEmulators();
-	emulatorXYZ = emulators;
-	for(var j = 0; j < emulators.length; j ++) {
-		emulatorQueue.push(j);
-	}
+	emulatorWheel = Files.getEmulators();
 
 	var topVal = 20;
 	for(var i = 0; i < 3; i ++) {
-		var newEm  = Blocks.newEmulatorBlock(topVal + "%", emulatorQueue[i]);
-		if(i == 1) {
-			for (var k in Animation.CENTRE_EMULATOR_BOX){
-				if (Animation.CENTRE_EMULATOR_BOX.hasOwnProperty(k)) {
-					$(newEm).css(k, Animation.CENTRE_EMULATOR_BOX[k]);
-				}
-			}
-		}
-		$(newEm).css("background-image", "url(./Emulators/" + emulators[emulatorQueue[i]] + "/media.png)");
+		var newEm  = Blocks.newEmulatorBlock(topVal + "%", emulatorWheel[i]);
+		if(i == 1) Animation.core.animateElement(newEm, Animation.CENTRE_EMULATOR_BOX, null, 0);
+		$(newEm).css("background-image", "url(./Emulators/" + emulatorWheel[i] + "/media.png)");
 		topVal += 30;
 	}
 	Animation.allowAnimation = true;
@@ -77,15 +64,17 @@ Animation.scrollEmulator = function(arg) {
 	var toKill;
 
 	if(arg == "down") {
-		emulatorQueue.unshift(emulatorQueue.pop());
-		Blocks.newEmulatorBlock("-10%", emulatorQueue[0]);
+		emulatorWheel.unshift(emulatorWheel.pop());
+
+		Blocks.newEmulatorBlock("-10%", emulatorWheel[0]);
 
 		Animation.core.animateElement(emBlocks.all, {top:"+=30%"});
 		Animation.core.animateElement(emBlocks.top, Animation.CENTRE_EMULATOR_BOX);
 		toKill = emBlocks.bottom;
 	} else if(arg == "up") {
-		emulatorQueue.push(emulatorQueue.shift());
-		Blocks.newEmulatorBlock("110%", emulatorQueue[2]);
+		emulatorWheel.push(emulatorWheel.shift());
+
+		Blocks.newEmulatorBlock("110%", emulatorWheel[emulatorWheel.length - 1]);
 
 		Animation.core.animateElement(emBlocks.all, {top:"-=30%"});
 		Animation.core.animateElement(emBlocks.bottom, Animation.CENTRE_EMULATOR_BOX);
@@ -109,20 +98,20 @@ Animation.scrollRoms = function(arg) {
 	//Logic for scrolling
 	if(arg == "down") {
 		currentRom ++;
-		if(currentRom > emulators[emulatorQueue[1]].roms.length - 1) {
+		if(currentRom > emulatorWheel[1].roms.length - 1) {
 			currentRom = 0;
 		}
-		newBlock = Blocks.newRomBlock("-85%", emulators[emulatorQueue[1]], currentRom);
+		newBlock = Blocks.newRomBlock("-85%", emulatorWheel[1], currentRom);
 		goal = "185%";
 	} else if(arg == "up") {
 		currentRom --;
 		if(currentRom < 0) {
-			currentRom = emulators[emulatorQueue[1]].roms.length - 1;
+			currentRom = emulatorWheel[1].roms.length - 1;
 		}
-		newBlock = Blocks.newRomBlock("185%", emulators[emulatorQueue[1]], currentRom);
+		newBlock = Blocks.newRomBlock("185%", emulatorWheel[1], currentRom);
 		goal = "-85%";
 	} else {
-		newBlock = Blocks.newRomBlock("-85%", emulators[emulatorQueue[1]], arg);
+		newBlock = Blocks.newRomBlock("-85%", emulatorWheel[1], arg);
 		goal = "185%";
 	}
 
@@ -163,7 +152,7 @@ Animation.openRomsMenu = function() {
 	Animation.core.animateElement($(".emulatorBlock"), Animation.NORMAL_EMULATOR_BOX);
 
 	//Bring in rom menu
-	Animation.core.animateElement(Blocks.newRomBlock("-85%", emulators[emulatorQueue[1]], 0), {top: "50%"}, () => Animation.allowAnimation = true);
+	Animation.core.animateElement(Blocks.newRomBlock("-85%", emulatorWheel[1], 0), {top: "50%"}, () => Animation.allowAnimation = true);
 }
 
 Animation.closeRomsMenu = function() {

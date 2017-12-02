@@ -2,10 +2,10 @@ const Blocks = {};
 
 //Creates a new emulatorBlock at the top or bottom by giving it"s "top" style text
 //	\-> Good values I found are -20% for top and 120% for bottom
-Blocks.newEmulatorBlock = function(top, id) {
+Blocks.newEmulatorBlock = function(top, gameConsole) {
 	var div = document.createElement("div");
 	div.className = "emulatorBlock";
-	$(div).css("background-image", "url(./Emulators/" + emulators[id] + "/media.png)");
+	$(div).css("background-image", "url(./Emulators/" + gameConsole + "/media.png)");
 	div.style.top = top;
 	document.getElementById("body").appendChild(div);
 	return div;
