@@ -7,7 +7,6 @@ const BrowserWindow = electron.BrowserWindow
 
 const path = require('path')
 const url = require('url')
-const electronLocalShortcut = require('electron-localshortcut')
 
 var currentWindow = 'main';
 
@@ -30,23 +29,14 @@ function createWindow () {
 
   mainWindow.webContents.toggleDevTools();
 
-  //Can register global hotkeys here for the window
-  electronLocalShortcut.register(mainWindow, 'F12', function(){
-	  mainWindow.webContents.toggleDevTools();
-  })
-
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
-	// Dereference the window object, usually you would store windows
-	// in an array if your app supports multi windows, this is the time
-	// when you should delete the corresponding element.
+	globalShortcut.unregisterAll()
+	app.quit()
 	mainWindow = null
   })
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.on('ready', createWindow)
 
 app.on('activate', function () {
@@ -57,8 +47,7 @@ app.on('activate', function () {
   }
 })
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+//Global shotcut registration
 app.on('ready', () => {
   globalShortcut.register('F2', () => {
 	  mainWindow.webContents.send('childProc', 'KILL')
@@ -85,8 +74,4 @@ app.on('ready', () => {
 		  }))
 	  }
   })
-})
-
-app.on('will-quit', () => {
-  globalShortcut.unregisterAll()
 })

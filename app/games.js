@@ -1,8 +1,8 @@
 var emulatorProc;
 
-const {ipcRenderer} = require('electron');
-const child = require('child_process');
-const processWindows = require('node-process-windows');
+const {ipcRenderer} = require("electron");
+const child = require("child_process");
+const processWindows = require("node-process-windows");
 
 
 //Starts emulator for given game
@@ -12,14 +12,14 @@ function openGame(gameConsole, game) {
 	}
 
 	//Get paths
-	var emulatorPath = getEmulatorPath(gameConsole);
-	var gamePath = getRomPath(gameConsole, game);
+	var emulatorPath = Files.getEmulatorPath(gameConsole);
+	var gamePath = Files.getRomPath(gameConsole, game);
 	if(gamePath == null || emulatorPath == null) {
 		return;
 	}
 
 	//Read in emu config to be used in childProc
-	var config = getConfig(gameConsole, game);
+	var config = Files.getConfig(gameConsole, game);
 	console.log(config);
 
 	emulatorProc = child.execFile(emulatorPath, [gamePath].concat(config.cliArgs), (error, stdout, stderr) => {
@@ -35,13 +35,13 @@ function openGame(gameConsole, game) {
 }
 
 //Listener for the press of the kill button which will kill the proc in its tracks
-ipcRenderer.on('childProc', (event, arg) => {
+ipcRenderer.on("childProc", (event, arg) => {
 	console.log(arg);
 	if(emulatorProc != null) {
 		emulatorProc.kill();
 	}
 	//Refocus on close
 	emulatorProc = null;
-	processWindows.focusWindow('Annode');
+	processWindows.focusWindow("Annode");
 	app.remote.getCurrentWindow().setAlwaysOnTop(true);
 });

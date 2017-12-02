@@ -10,7 +10,7 @@ p, h2 {
 	color: rgba(0,0,0,0.5);
 	text-align: center;
 	font-size: 14pt;
-	font-family: 'VCR OSD Mono';
+	font-family: "VCR OSD Mono";
 	margin: 0%;
 	padding: 2%;
 }
@@ -30,7 +30,7 @@ button {
 }
 
 table {
-	font-family: 'VCR OSD Mono';
+	font-family: "VCR OSD Mono";
 	border-collapse: collapse;
 }
 

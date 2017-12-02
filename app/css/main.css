@@ -1,28 +1,26 @@
 /* Used for rom title & subtitle */
 h1, h2 {
 	color: black;
-	text-align: center;
 	margin: 0%;
-	font-size: 1.8vw;
+	font-size: 3vh;
 	font-family: pixeledregular;
 }
 
 /* Used for rom description */
 p {
 	color: black;
-	text-align: center;
-	font-family: 'VCR OSD Mono';
-	font-size: 1.5vw;
+	font-family: "VCR OSD Mono";
+	font-size: 2vh;
 	margin: 0%;
 	padding: 2%;
 }
 
 body {
-	background-image: url('../images/background.png');
+	background-image: url("../images/background.png");
 }
 
 .emulatorBlock {
-	background-image: url('../images/background.png');
+	background-image: url("../images/background.png");
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-size: 100% 100%;
@@ -39,12 +37,11 @@ body {
 }
 
 .romBlock {
-	background-image: url('../images/background.png');
+	background-image: url("../images/background.png");
 	position: fixed;
 	transform: translate(-50%, -50%);
 	left: 70%;
 	top: 50%;
-	font-size: 72pt;
 	text-align: center;
 	border-radius: 10%;
 	width: 50%;
@@ -60,13 +57,11 @@ body {
 }
 
 .romMedia {
-	background-size: 100% 100%;
 	width: 80%;
 	height: 40%;
 	margin-left: auto;
 	margin-right: auto;
-	border-radius: 10%;
+	border-radius: 20%;
 	border-style: solid;
-	border-color: rgba(0,0,0,1);
 	border-width: 5px;
 }

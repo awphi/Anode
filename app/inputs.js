@@ -1,27 +1,45 @@
+const Inputs = new InputObj();
+
+function InputObj() {
+	this.gamepad = {};
+	this.core = {};
+
+	this.gamepad.waitForGamepad = function() {
+		var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+		if(gamepads[0] != null) {
+			window.clearInterval(Inputs.gamepad.poll);
+			console.log("gamepad connected: ", gamepads[0]);
+			Inputs.gamepad.interval = window.setInterval(Inputs.gamepad.pollInputs,16);
+		}
+	}
+
+	this.gamepad.poll = setInterval(this.gamepad.waitForGamepad, 500);
+	this.gamepad.canPress = [];
+}
 //Generic input handler
 // Requires parameters to come in like so:
 //	\-> code: 38 = scroll up, 40 = scroll down, 39 = open roms meny/open game, 37 = close roms menu
-//	(These are just the keycodes for the arrow keys but to standardise I'll use these numbers)
-function handleInputs(code) {
+//	(These are just the keycodes for the arrow keys but to standardise I"ll use these numbers)
+Inputs.core.handleInputs = function(code) {
 	if(code == 38 || code == 40) {
 		var dir;
 		if(code == 38) {
-			dir = 'up'
+			dir = "up"
 		} else if (code == 40) {
-			dir = 'down'
+			dir = "down"
 		}
-		if(Animation.scroll == 'emulator') {
+		if(Animation.scroll == "emulator") {
 			Animation.scrollEmulator(dir);
-		} else if (Animation.scroll == 'roms') {
+		} else if (Animation.scroll == "roms") {
 			Animation.scrollRoms(dir)
 		}
 	} else if (code == 39) {
-		if(Animation.scroll == 'emulator') {
+		if(Animation.scroll == "emulator") {
 			Animation.openRomsMenu();
-		} else if(Animation.scroll == 'roms') {
+		} else if(Animation.scroll == "roms") {
 			openGame(emulators[emulatorQueue[1]],emulators[emulatorQueue[1]].roms[currentRom]);
 		}
-	} else if (code == 37 && Animation.scroll == 'roms') {
+	} else if (code == 37 && Animation.scroll == "roms") {
 		Animation.closeRomsMenu();
 	}
 }
@@ -29,58 +47,44 @@ function handleInputs(code) {
 //Keyboard
 window.onkeydown = function(e) {
 	var code = e.keyCode ? e.keyCode : e.which;
-	handleInputs(code);
+	Inputs.core.handleInputs(code);
 }
 
-//Gamepad input handling - only uses the first gamepad connected to act like player 1 controlling the menu sort of thing (think wii or arcade machines)
-var interval;
-const controllerPoll = window.setInterval(waitForGamepad,500);
-const canPress = [];
-
-function waitForGamepad() {
-	var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
-	if(gamepads[0] != null) {
-		window.clearInterval(controllerPoll);
-		console.log('gamepad connected: ', gamepads[0]);
-		interval = window.setInterval(pollGamepadInputs,16);
-	}
-}
-
+//Gamepad
 window.addEventListener("gamepaddisconnected", function(e) {
-	window.clearInterval(interval);
+	window.clearInterval(Inputs.gamepad.interval);
 	console.log(e);
 	//Make a little pop-up w/ main gamepad disconnected error
 });
 
-function buttonPressed(button) {
+Inputs.gamepad.buttonPressed = function(button) {
 	if (typeof(button) == "object") {
 		return button.pressed;
 	}
 	return button == 1.0;
 }
 
-function pollGamepadInputs() {
+Inputs.gamepad.pollInputs = function() {
 	var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
 	if (!gamepads) {
-		window.clearInterval(interval);
+		window.clearInterval(Inputs.gamepad.interval);
 		return;
 	}
 	var gp = gamepads[0];
-	if(buttonPressed(gp.buttons[0]) && canPress[0]) {
-		handleInputs(39);
-	} else if(buttonPressed(gp.buttons[1]) && canPress[1]) {
-		handleInputs(37);
-	} else if(buttonPressed(gp.buttons[12])) {
-		handleInputs(38);
-	} else if(buttonPressed(gp.buttons[13])) {
-		handleInputs(40);
-		console.log('x');
+	if(Inputs.gamepad.buttonPressed(gp.buttons[0]) && Inputs.gamepad.canPress[0]) {
+		Inputs.core.handleInputs(39);
+	} else if(Inputs.gamepad.buttonPressed(gp.buttons[1]) && Inputs.gamepad.canPress[1]) {
+		Inputs.core.handleInputs(37);
+	} else if(Inputs.gamepad.buttonPressed(gp.buttons[12])) {
+		Inputs.core.handleInputs(38);
+	} else if(Inputs.gamepad.buttonPressed(gp.buttons[13])) {
+		Inputs.core.handleInputs(40);
 	}
 	for(var i = 0; i < gp.buttons.length; i ++) {
-		if(buttonPressed(gp.buttons[i])) {
-			canPress[i] = false;
+		if(Inputs.gamepad.buttonPressed(gp.buttons[i])) {
+			Inputs.gamepad.canPress[i] = false;
 		} else {
-			canPress[i] = true;
+			Inputs.gamepad.canPress[i] = true;
 		}
 	}
 }
