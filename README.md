@@ -4,17 +4,17 @@ Annode is a JS-based open source arcade frontloader* originally that started as 
 
 _*an arcade frontloader is a piece of software designed for arcade machines that hide the OS they run on_
 ## How does Annode function?
-Annode utilises  Electron which utilises the power of Chromium to run javascript-based applications on the desktop. It can also use other frameworks and libraries. For example, Annode uses jQuery and nothing else (as I wanted to keep it minimal) but in theory I could use Express etc. if I needed to.
+Annode utilises  Electron which utilises the power of Chromium to run javascript-based applications on the desktop. It can also use other frameworks and libraries. For example, Annode uses jQuery and nothing else (as I wanted to keep it minimal) but in theory I could use React, Angular etc. if I needed to.
 ## Current Features/Goals
 _This list is incomplete and will be built on as suggestions/ideas surface_
 - [x] Front-end GUI for accessing the different emulators & roms
 - [x] Emulator configuration
-- [ ] Simple rom importing _~50% done_
-- [ ] Gamepad support
-- [ ] Metadata & image scraping _~50% done_
+- [x] Simple rom importing
+- [x] Gamepad support
+- [x] Metadata & image scraping
 - [ ] Visual candy in menu
 - [ ] Customisability (custom backgrounds, videos, screenshots etc.)
 - [ ] Optimise EVERYTHING _can it ever truly be done?_
 - [ ] Config file to specify custom paths & options etc.
 ## Documentation
-Upon getting to a stable release I will begin to fully flesh out the documentation of this project. For now it will just contains notes and to-dos
+The documentation of the project can be seen in the wiki on this repository. On each page there is a simple sumamry of each 'module' of the frontloader and an in-depth one too.
