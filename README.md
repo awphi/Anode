@@ -17,4 +17,6 @@ _This list is incomplete and will be built on as suggestions/ideas surface_
 - [ ] Optimise EVERYTHING _can it ever truly be done?_
 - [ ] Config file to specify custom paths & options etc.
 ## Documentation
-The documentation of the project can be seen in the wiki on this repository. On each page there is a simple sumamry of each 'module' of the frontloader and an in-depth one too.
+The documentation of the project can be seen in the wiki on this repository. On each page there is a simple sumamry of each 'module' of the frontloader and an in-depth one too.  
+## Project progression
+For a look at proper timetabling, research etc. it's best to see my EP folder as I have included everything external to Annode (the UI programming portion of my EP (this repository)) in there. However, as this was a large part of my EP all of the documentation for Annode can be seen in the wiki.
