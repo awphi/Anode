@@ -10,8 +10,8 @@ const Animation = new AnimationController();
 
 function AnimationController() {
 	this.core = {};
-	this.NORMAL_EMULATOR_BOX = {width:"45vh", height:"15vh"};
-	this.CENTRE_EMULATOR_BOX = {width:"90vh", height:"30vh"};
+	this.NORMAL_EMULATOR_BOX = {width:"30vh", height:"15vh"};
+	this.CENTRE_EMULATOR_BOX = {width:"70vh", height:"35vh"};
 	this.scroll = "emulator";
 	this.allowAnimation = false;
 }
@@ -55,9 +55,7 @@ Animation.getEmulatorBlocks = function() {
 }
 
 Animation.scrollEmulator = function(arg) {
-	if(!Animation.allowAnimation) {
-		return;
-	}
+	if(!Animation.allowAnimation) return;
 	Animation.allowAnimation = false;
 
 	var emBlocks = Animation.getEmulatorBlocks();
@@ -87,9 +85,7 @@ Animation.scrollEmulator = function(arg) {
 }
 
 Animation.scrollRoms = function(arg) {
-	if(!Animation.allowAnimation) {
-		return;
-	}
+	if(!Animation.allowAnimation || !Animation.scroll == "roms" || emulatorWheel[1].roms.length == 0) return;
 	Animation.allowAnimation = false;
 
 	var current = document.getElementsByClassName("romBlock")[0];
@@ -138,10 +134,10 @@ Animation.core.animateElement = function(block, props, callback, duration = 200,
 	});
 }
 
-Animation.openRomsMenu = function() {
-	if(!Animation.allowAnimation) {
-		return;
-	}
+Animation.openRomsMenu = function(emulator) {
+    console.log(emulator);
+	if(!Animation.allowAnimation || !emulatorWheel.includes(emulator) || Animation.scroll === "roms") return;
+
 	Animation.allowAnimation = false;
 
 	Animation.scroll = "roms";
@@ -152,13 +148,12 @@ Animation.openRomsMenu = function() {
 	Animation.core.animateElement($(".emulatorBlock"), Animation.NORMAL_EMULATOR_BOX);
 
 	//Bring in rom menu
-	Animation.core.animateElement(Blocks.newRomBlock("-85%", emulatorWheel[1], 0), {top: "50%"}, () => Animation.allowAnimation = true);
+	Animation.core.animateElement(Blocks.newRomBlock("-85%", emulator, 0), {top: "50%"}, () => Animation.allowAnimation = true);
 }
 
 Animation.closeRomsMenu = function() {
-	if(!Animation.allowAnimation) {
-		return;
-	}
+	if(!Animation.allowAnimation || Animation.scroll !== "roms") return;
+
 	Animation.allowAnimation = false;
 	Animation.scroll = "emulator";
 

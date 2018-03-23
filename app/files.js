@@ -5,27 +5,21 @@ const fs = require("fs");
 const yaml = require("js-yaml");
 
 Files.getRomPath = function(gameConsole, game) {
-	if(fs.existsSync("./Emulators/" + gameConsole + "/roms/" + game)) {
-		var cont = fs.readdirSync("./Emulators/" + gameConsole + "/roms/" + game);
-		for(var i = 0; i < cont.length; i ++) {
-			if(cont[i].split(".")[0] == "rom") {
-				return "./Emulators/" + gameConsole + "/roms/" + game + "/" + cont[i];
-				break;
-			}
-		}
+	if(!fs.existsSync("./Emulators/" + gameConsole + "/roms/" + game)) return null;
+
+	var cont = fs.readdirSync("./Emulators/" + gameConsole + "/roms/" + game);
+	for(var i = 0; i < cont.length; i ++) {
+		if(cont[i].split(".")[0] == "rom") return "./Emulators/" + gameConsole + "/roms/" + game + "/" + cont[i];
 	}
 }
 
 Files.getEmulatorPath = function(gameConsole) {
-	if(fs.existsSync("./Emulators/" + gameConsole + "/emulator")) {
-		var cont = fs.readdirSync("./Emulators/" + gameConsole + "/emulator");
-		for(var i = 0; i < cont.length; i ++) {
-			console.log(cont[i].split("."));
-			if(cont[i].split(".")[1] == "exe") {
-				return "./Emulators/" + gameConsole + "/emulator/" + cont[i];
-				break;
-			}
-		}
+	if(fs.existsSync("./Emulators/" + gameConsole + "/emulator")) return null;
+
+	var cont = fs.readdirSync("./Emulators/" + gameConsole + "/emulator");
+	for(var i = 0; i < cont.length; i ++) {
+		console.log(cont[i].split("."));
+		if(cont[i].split(".")[1] == "exe") return "./Emulators/" + gameConsole + "/emulator/" + cont[i];
 	}
 }
 

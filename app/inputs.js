@@ -9,7 +9,7 @@ function InputObj() {
 		if(gamepads[0] != null) {
 			window.clearInterval(Inputs.gamepad.poll);
 			console.log("gamepad connected: ", gamepads[0]);
-			Inputs.gamepad.interval = window.setInterval(Inputs.gamepad.pollInputs,16);
+			Inputs.gamepad.interval = window.setInterval(Inputs.gamepad.pollInputs, 16);
 		}
 	}
 
@@ -35,7 +35,7 @@ Inputs.core.handleInputs = function(code) {
 		}
 	} else if (code == 39) {
 		if(Animation.scroll == "emulator") {
-			Animation.openRomsMenu();
+			Animation.openRomsMenu(emulatorWheel[1]);
 		} else if(Animation.scroll == "roms") {
 			openGame(emulatorWheel[1], emulatorWheel[1].roms[currentRom]);
 		}
@@ -61,6 +61,7 @@ Inputs.gamepad.buttonPressed = function(button) {
 	if (typeof(button) == "object") {
 		return button.pressed;
 	}
+
 	return button == 1.0;
 }
 
