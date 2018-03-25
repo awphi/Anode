@@ -28,11 +28,24 @@ function openGame(gameConsole, game) {
 	}, config.waitTime);
 }
 
+function focusAnnode() {
+	processWindows.getProcesses(function(err, processes) {
+        var focuses = processes.filter(p => p.mainWindowTitle.indexOf("Annode") >= 0);
+        focuses = focuses.filter(p => p.processName.indexOf("electron") >= 0);
+
+        console.log(focuses);
+
+        if(focuses.length > 0) {
+            processWindows.focusWindow(focuses[0]);
+        }
+    });
+}
+
 //Listener for the press of the kill button which will kill the proc in its tracks
 ipcRenderer.on("childProc", (event, arg) => {
 	if(emulatorProc != null) emulatorProc.kill();
 	//Refocus on close
-	emulatorProc = null;
-	processWindows.focusWindow("Annode");
+	focusAnnode();
+	emulatorProc = null; 
 	app.remote.getCurrentWindow().setAlwaysOnTop(true);
 });

@@ -59,7 +59,6 @@ Animation.scrollEmulator = function(arg) {
 	Animation.allowAnimation = false;
 
 	var emBlocks = Animation.getEmulatorBlocks();
-	var toKill;
 
 	if(arg == "down") {
 		emulatorWheel.unshift(emulatorWheel.pop());

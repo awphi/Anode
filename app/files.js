@@ -9,16 +9,15 @@ Files.getRomPath = function(gameConsole, game) {
 
 	var cont = fs.readdirSync("./Emulators/" + gameConsole + "/roms/" + game);
 	for(var i = 0; i < cont.length; i ++) {
-		if(cont[i].split(".")[0] == "rom") return "./Emulators/" + gameConsole + "/roms/" + game + "/" + cont[i];
+		if(cont[i].split(".")[0] == "rom") return __dirname + "/Emulators/" + gameConsole + "/roms/" + game + "/" + cont[i];
 	}
 }
 
 Files.getEmulatorPath = function(gameConsole) {
-	if(fs.existsSync("./Emulators/" + gameConsole + "/emulator")) return null;
+	if(!fs.existsSync("./Emulators/" + gameConsole + "/emulator")) return null;
 
 	var cont = fs.readdirSync("./Emulators/" + gameConsole + "/emulator");
 	for(var i = 0; i < cont.length; i ++) {
-		console.log(cont[i].split("."));
 		if(cont[i].split(".")[1] == "exe") return "./Emulators/" + gameConsole + "/emulator/" + cont[i];
 	}
 }

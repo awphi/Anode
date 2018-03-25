@@ -17,6 +17,7 @@ let mainWindow
 function createWindow () {
   // Create the browser window. - not fullscreen currently for testing purposes
   mainWindow = new BrowserWindow({width: 1024, height: 768})
+  mainWindow.setFullScreen(false);
 
   mainWindow.setMenu(null);
 
