@@ -3,6 +3,14 @@
 Annode is a JS-based open source arcade frontloader* originally that started as an idea but quickly became a core part of my EP for 6th form. The goal was to build an entire arcade machine from scratch including the software (aside from emulators and ROMs). Annode was created with the goal of being incredibly user-friendly and providing a simple, polished arcade experience.
 
 _*an arcade frontloader is a piece of software designed for arcade machines that hide the OS they run on_
+
+
+## Screenshots
+_LAST UPDATED 25/03/18 - UI Looks of Annode are subject to change_
+![](Graphics/Screenshots/1.png)
+![](Graphics/Screenshots/2.png)
+![](Graphics/Screenshots/3.png)
+
 ## How does Annode function?
 Annode utilises  Electron which utilises the power of Chromium to run javascript-based applications on the desktop. It can also use other frameworks and libraries. For example, Annode uses jQuery and nothing else (as I wanted to keep it minimal) but in theory I could use React, Angular etc. if I needed to.
 ## Current Features/Goals
