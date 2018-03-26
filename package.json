@@ -1,12 +1,9 @@
 {
  "name": "Annode",
- "version": "0.7.5",
+ "version": "0.8.0",
  "description": "Electron-based arcade frontloader.",
  "author": "aWPh--",
  "main": "main.js",
- "scripts": {
-  "start": "electron ."
- },
  "author": "AWPH",
  "license": "ISC",
  "devDependencies": {
@@ -30,6 +27,7 @@
   },
   "scripts": {
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "start": "electron ."
   }
 }

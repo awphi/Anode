@@ -80,7 +80,7 @@ function getPlatformDir(id) {
 	if(Object.keys(platformDict).length == 0) {
 		var emulators = fs.readdirSync("./Emulators");
 		for(var i = 0; i < emulators.length; i ++) {
-			platformDict[String(yaml.safeLoad(fs.readFileSync("./Emulators/" + emulators[i] + "/config.yml","utf-8")).platformId)] = "./Emulators/" + emulators[i];
+			platformDict[String(yaml.safeLoad(fs.readFileSync(Core.emulatorsLocation + "/" + emulators[i] + "/config.yml","utf-8")).platformId)] = Core.emulatorsLocation + "/" + emulators[i];
 		}
 	}
 	return platformDict[String(id)];

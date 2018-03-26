@@ -18,14 +18,28 @@ function openGame(gameConsole, game) {
 	var config = Files.getConfig(gameConsole, game);
 	console.log(config);
 
+	Animation.pause();
+
 	emulatorProc = child.execFile(emulatorPath, [gamePath].concat(config.cliArgs), (error, stdout, stderr) => {
 		if (error) throw error;
 	});
 
+	focusAnnode();
+
 	//Wait configured time
 	window.setTimeout(function() {
 		app.remote.getCurrentWindow().setAlwaysOnTop(false);
+		focusChild();
 	}, config.waitTime);
+}
+
+function focusChild() {
+	processWindows.getProcesses(function(err, processes) {
+        var focuses = processes.filter(p => String(p.pid).indexOf(String(emulatorProc.pid)) >= 0);
+        if(focuses.length > 0) {
+            processWindows.focusWindow(focuses[0]);
+        }
+    });
 }
 
 function focusAnnode() {
@@ -48,4 +62,5 @@ ipcRenderer.on("childProc", (event, arg) => {
 	focusAnnode();
 	emulatorProc = null; 
 	app.remote.getCurrentWindow().setAlwaysOnTop(true);
+	Animation.unpause();
 });
