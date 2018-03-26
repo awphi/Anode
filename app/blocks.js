@@ -5,7 +5,7 @@ const Blocks = {};
 Blocks.newEmulatorBlock = function(top, gameConsole) {
 	var div = document.createElement("div");
 	div.className = "emulatorBlock";
-	$(div).css("background-image", "url(./Emulators/" + gameConsole + "/media.png)");
+	$(div).css("background-image", "url(" + Core.emulatorsLocation + "/" + gameConsole + "/media.png)");
 	div.style.top = top;
 	document.getElementById("body").appendChild(div);
 	return div;
