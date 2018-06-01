@@ -12,10 +12,17 @@ Blocks.newEmulatorBlock = function(top, gameConsole) {
 }
 
 // TODO: Clean this up w/ jQuery asap
-Blocks.newRomBlock = function(top, emulator, gameNumber) {
+Blocks.newRomBlock = function(style, emulator, gameNumber) {
     const div = document.createElement("div");
+
     div.className = "romBlock";
-    div.style.top = top;
+    for (var property in style) {
+        if (style.hasOwnProperty(property)) {
+            var str = '' + property;
+            $(div).css(str, style[str]);
+        }
+    }
+
     const title = document.createElement("h1");
 
     if(emulator.roms[gameNumber] == null) {
@@ -56,8 +63,4 @@ Blocks.newRomBlock = function(top, emulator, gameNumber) {
 
     document.getElementById("body").appendChild(div);
     return div;
-}
-
-function capitaliseFirst(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
 }

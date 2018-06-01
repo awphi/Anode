@@ -6,8 +6,8 @@ _*an arcade frontloader is a piece of software designed for arcade machines that
 
 
 ## Screenshots
-_LAST UPDATED 25/03/18 - UI Looks of Annode are subject to change_
-![](Graphics/Screenshots/1.png)
+_LAST UPDATED 01/06/18 - UI Looks of Annode are subject to change_
+![](Graphics/Screenshots/v2-1.png)
 ![](Graphics/Screenshots/2.png)
 ![](Graphics/Screenshots/3.png)
 

@@ -16,8 +16,8 @@ const Core = {
 
 const Animation = {
     core: {},
-    NORMAL_EMULATOR_BOX: {width:"30vh", height:"15vh"},
-    CENTRE_EMULATOR_BOX: {width:"70vh", height:"35vh"},
+    NORMAL_EMULATOR_BOX: {width:"30vh", height:"15vh", borderRadius:"15px"},
+    CENTRE_EMULATOR_BOX: {width:"70vh", height:"35vh", borderRadius:"30px"},
     scroll: ScrollEnum.EMULATORS,
     allowAnimation: false
 }
@@ -73,17 +73,17 @@ Animation.scrollRoms = function(arg) {
         if(Core.currentRom > Core.emulatorWheel[1].roms.length - 1) {
             Core.currentRom = 0;
         }
-        newBlock = Blocks.newRomBlock("-85%", Core.emulatorWheel[1], Core.currentRom);
+        newBlock = Blocks.newRomBlock({top: "-85%"}, Core.emulatorWheel[1], Core.currentRom);
         goal = "185%";
     } else if(arg == ScrollDirEnum.UP) {
         Core.currentRom --;
         if(Core.currentRom < 0) {
             Core.currentRom = Core.emulatorWheel[1].roms.length - 1;
         }
-        newBlock = Blocks.newRomBlock("185%", Core.emulatorWheel[1], Core.currentRom);
+        newBlock = Blocks.newRomBlock({top: "185%"}, Core.emulatorWheel[1], Core.currentRom);
         goal = "-85%";
     } else {
-        newBlock = Blocks.newRomBlock("-85%", Core.emulatorWheel[1], arg);
+        newBlock = Blocks.newRomBlock({top: "-85%"}, Core.emulatorWheel[1], arg);
         goal = "185%";
     }
 
@@ -111,7 +111,6 @@ Animation.core.animateElement = function(block, props, callback, duration = 200,
 }
 
 Animation.openRomsMenu = function(emulator) {
-    console.log(emulator);
     if(!Animation.allowAnimation || !Core.emulatorWheel.includes(emulator) || Animation.scroll === ScrollEnum.ROMS) return;
 
     Animation.allowAnimation = false;
@@ -120,11 +119,11 @@ Animation.openRomsMenu = function(emulator) {
     Core.currentRom = 0;
 
     //Move emulator menu to left
-    Animation.core.animateElement($(".emulatorBlock"), {left: "20%"});
+    Animation.core.animateElement($(".emulatorBlock"), {left: "-20%"});
     Animation.core.animateElement($(".emulatorBlock"), Animation.NORMAL_EMULATOR_BOX);
 
     //Bring in rom menu
-    Animation.core.animateElement(Blocks.newRomBlock("-85%", emulator, 0), {top: "50%"}, () => Animation.allowAnimation = true);
+    Animation.core.animateElement(Blocks.newRomBlock({left: "185%"}, emulator, 0), {left: "50%"}, () => Animation.allowAnimation = true);
 }
 
 Animation.pause = function() {

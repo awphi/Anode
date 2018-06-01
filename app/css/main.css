@@ -30,7 +30,7 @@ body {
     left: 50%;
     height: 15vh;
     width: 30vh;
-    border-radius: 10%;
+    border-radius: 15px;
     box-shadow: 10px 10px 10px 10px #888;
     border-width: 5px;
 }
@@ -48,11 +48,11 @@ body {
     background-image: url("../images/background.png");
     position: fixed;
     transform: translate(-50%, -50%);
-    left: 70%;
+    left: 50%;
     top: 50%;
     text-align: center;
-    border-radius: 10%;
-    width: 50%;
+    border-radius: 50px;
+    width: 40%;
     height: 80%;
     display: flex;
     flex: auto;
@@ -60,6 +60,7 @@ body {
     box-shadow: 10px 10px 10px 10px #888;
     border-width: 5px;
     overflow: hidden;
+    min-width: 426px;
 }
 
 .romMedia {

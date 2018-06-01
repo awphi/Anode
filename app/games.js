@@ -17,7 +17,6 @@ Games.openGame = function(gameConsole, game) {
 
     //Read in emu config to be used in childProc
     var config = Files.getConfig(gameConsole, game);
-    console.log(config);
 
     Animation.pause();
 

@@ -10,11 +10,17 @@ var currentWindow = 'main';
 let mainWindow;
 
 function createWindow() {
+    const isDev = process.env.NODE_ENV.trim() === "dev";
+
     mainWindow = new BrowserWindow({width: 1024, height: 768});
-    mainWindow.setFullScreen(true);
+    mainWindow.setFullScreen(!isDev);
     mainWindow.setAlwaysOnTop(true);
 
     mainWindow.setMenu(null);
+
+    if(isDev) {
+        mainWindow.toggleDevTools();
+    }
 
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'index.html'),

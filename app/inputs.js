@@ -16,9 +16,24 @@ const Inputs = {
 
 //Generic input handler
 // Requires parameters to come in like so:
-//    \-> code: 38 = scroll up, 40 = scroll down, 39 = open roms menu/open game, 37 = close roms menu
+//    \-> code: 38 = scroll up, 40 = scroll down, 39 = open roms menu/open game, 37 = close roms menu, 75 = open search/sort panel
 //    (These are just the keycodes for the arrow keys but to standardise I'll use these numbers)
 Inputs.core.handleInputs = function(code) {
+    if(code == 75 && Animation.scroll == ScrollEnum.ROMS) {
+        if(Animation.allowAnimation && !SearchSort.open) {
+            SearchSort.openPanel();
+        } else if(SearchSort.open) {
+            SearchSort.closePanel();
+        }
+    }
+
+    //If the search sort panel is open we want to 'hijack' key presses to use in that menu
+    console.log(SearchSort.open);
+    if(SearchSort.open) {
+        // Handle inputs
+        return;
+    }
+
     if(code == 38 || code == 40) {
         var dir = code == 38 ? ScrollDirEnum.UP : ScrollDirEnum.DOWN;
         if(Animation.scroll == ScrollEnum.EMULATORS) {
@@ -46,7 +61,6 @@ window.onkeydown = function(e) {
 //Gamepad
 window.addEventListener("gamepaddisconnected", function(e) {
     window.clearInterval(Inputs.gamepad.interval);
-    console.log(e);
     //Make a little pop-up w/ main gamepad disconnected error
 });
 
