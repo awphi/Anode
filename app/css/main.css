@@ -1,69 +1,69 @@
 /* Used for rom title & subtitle */
 h1, h2 {
-	color: black;
-	margin: 0%;
-	font-size: 3vh;
-	font-family: pixeledregular;
+    color: black;
+    margin: 0%;
+    font-size: 3vh;
+    font-family: pixeledregular;
 }
 
 /* Used for rom description */
 p {
-	color: black;
-	font-family: "VCR OSD Mono";
-	font-size: 2vh;
-	margin: 0%;
-	padding: 2%;
+    color: black;
+    font-family: "VCR OSD Mono";
+    font-size: 2vh;
+    margin: 0%;
+    padding: 2%;
 }
 
 body {
-	background-image: url("../images/background.png");
-	overflow : hidden;
+    background-image: url("../images/background.png");
+    overflow : hidden;
 }
 
 .emulatorBlock {
-	background-image: url("../images/background.png");
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-size: 100% 100%;
-	position: fixed;
-	transform: translate(-50%, -50%);
-	left: 50%;
-	height: 15vh;
-	width: 30vh;
-	border-radius: 10%;
-	box-shadow: 10px 10px 10px 10px #888;
-	border-width: 5px;
+    background-image: url("../images/background.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-size: 100% 100%;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    height: 15vh;
+    width: 30vh;
+    border-radius: 10%;
+    box-shadow: 10px 10px 10px 10px #888;
+    border-width: 5px;
 }
 
 .pause {
-	width: 100%;
-	height: 100%;
-	background-color: rgba(1, 1, 1, 0.5);
-	position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(1, 1, 1, 0.5);
+    position: fixed;
     left: 0;
     top: 0;
 }
 
 .romBlock {
-	background-image: url("../images/background.png");
-	position: fixed;
-	transform: translate(-50%, -50%);
-	left: 70%;
-	top: 50%;
-	text-align: center;
-	border-radius: 10%;
-	width: 50%;
-	height: 80%;
-	display: flex;
-	flex: auto;
-	flex-direction: column;
-	box-shadow: 10px 10px 10px 10px #888;
-	border-width: 5px;
-	overflow: hidden;
+    background-image: url("../images/background.png");
+    position: fixed;
+    transform: translate(-50%, -50%);
+    left: 70%;
+    top: 50%;
+    text-align: center;
+    border-radius: 10%;
+    width: 50%;
+    height: 80%;
+    display: flex;
+    flex: auto;
+    flex-direction: column;
+    box-shadow: 10px 10px 10px 10px #888;
+    border-width: 5px;
+    overflow: hidden;
 }
 
 .romMedia {
-	width: auto;
+    width: auto;
     height: 40%;
     margin-left: auto;
     margin-right: auto;
