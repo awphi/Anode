@@ -14,10 +14,16 @@ const Inputs = {
     }
 }
 
-//Generic input handler
-// Requires parameters to come in like so:
-//    \-> code: 38 = scroll up, 40 = scroll down, 39 = open roms menu/open game, 37 = close roms menu, 75 = open search/sort panel
-//    (These are just the keycodes for the arrow keys but to standardise I'll use these numbers)
+/*
+    -- Generic input handler --
+    Requires parameters to come in like so: 
+        37 = move left (left arrow key)
+        38 = move up (up arrow key)
+        39 = move right (right arrow key)
+        40 = move down (down arrow key)
+        32 = start game (space key)
+        75 = toggle search/sort panel (K key)   
+*/
 Inputs.core.handleInputs = function(code) {
     if(code == 75 && Animation.scroll == ScrollEnum.ROMS) {
         if(Animation.allowAnimation && !SearchSort.open) {
@@ -28,27 +34,42 @@ Inputs.core.handleInputs = function(code) {
     }
 
     //If the search sort panel is open we want to 'hijack' key presses to use in that menu
-    console.log(SearchSort.open);
     if(SearchSort.open) {
         // Handle inputs
         return;
     }
 
-    if(code == 38 || code == 40) {
-        var dir = code == 38 ? ScrollDirEnum.UP : ScrollDirEnum.DOWN;
-        if(Animation.scroll == ScrollEnum.EMULATORS) {
+    // Starting a game in necessary
+    if(Animation.scroll == ScrollEnum.ROMS && code == 32) {
+        Games.openGame(Core.emulatorWheel[1], Core.emulatorWheel[1].roms[Core.currentRom]);
+        return;
+    }    
+
+    // Arrow keys
+    var dir;
+    switch(code) {
+        case 38: 
+            dir = ScrollDirEnum.UP;
+            break;
+        case 40:
+            dir = ScrollDirEnum.DOWN;
+            break;
+        case 37:
+            dir = ScrollDirEnum.LEFT;
+            break;
+        case 39:
+            dir = ScrollDirEnum.RIGHT;
+            break;
+    }
+
+    if (Animation.scroll == ScrollEnum.ROMS) {
+        Animation.scrollRoms(dir);
+    } else if(Animation.scroll == ScrollEnum.EMULATORS) {
+        if(dir == ScrollDirEnum.UP || dir == ScrollDirEnum.DOWN) {
             Animation.scrollEmulator(dir);
-        } else if (Animation.scroll == ScrollEnum.ROMS) {
-            Animation.scrollRoms(dir)
-        }
-    } else if (code == 39) {
-        if(Animation.scroll == ScrollEnum.EMULATORS) {
+        } else if(dir == ScrollDirEnum.RIGHT) {
             Animation.openRomsMenu(Core.emulatorWheel[1]);
-        } else if(Animation.scroll == ScrollEnum.ROMS) {
-            Games.openGame(Core.emulatorWheel[1], Core.emulatorWheel[1].roms[Core.currentRom]);
         }
-    } else if (code == 37 && Animation.scroll == ScrollEnum.ROMS) {
-        Animation.closeRomsMenu();
     }
 }
 

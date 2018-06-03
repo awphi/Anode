@@ -10,7 +10,7 @@ var currentWindow = 'main';
 let mainWindow;
 
 function createWindow() {
-    const isDev = process.env.NODE_ENV.trim() === "dev";
+    const isDev = process.env.NODE_ENV == null ? false : process.env.NODE_ENV.trim() === "dev";
 
     mainWindow = new BrowserWindow({width: 1024, height: 768});
     mainWindow.setFullScreen(!isDev);

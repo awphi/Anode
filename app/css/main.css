@@ -1,31 +1,35 @@
 /* Used for rom title & subtitle */
 h1, h2 {
     color: black;
-    margin: 0%;
-    font-size: 3vh;
-    font-family: pixeledregular;
+    font-size: 2.5vh;
+    font-family: "press_start_2pregular";
 }
 
 /* Used for rom description */
 p {
     color: black;
-    font-family: "VCR OSD Mono";
+    font-family: "upheaval_tt_brkregular";
     font-size: 2vh;
-    margin: 0%;
-    padding: 2%;
+}
+
+h1, h2, p {
+    margin-left: 25px;
+    margin-right: 25px;
 }
 
 body {
     background-image: url("../images/background.png");
     overflow : hidden;
+    height: 100%;
+}
+
+html {
+    height: 100%;
 }
 
 .emulatorBlock {
-    background-image: url("../images/background.png");
-    background-repeat: no-repeat;
-    background-size: cover;
     background-size: 100% 100%;
-    position: fixed;
+    position: absolute;
     transform: translate(-50%, -50%);
     left: 50%;
     height: 15vh;
@@ -42,32 +46,76 @@ body {
     position: fixed;
     left: 0;
     top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.romBlockWrapper {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translate(-50%, -50%);
+    position: fixed;
+    top: 50%;
 }
 
 .romBlock {
     background-image: url("../images/background.png");
-    position: fixed;
-    transform: translate(-50%, -50%);
-    left: 50%;
-    top: 50%;
     text-align: center;
     border-radius: 50px;
-    width: 40%;
-    height: 80%;
+    width: 90%;
+    max-height: 95%;
     display: flex;
-    flex: auto;
     flex-direction: column;
     box-shadow: 10px 10px 10px 10px #888;
     border-width: 5px;
     overflow: hidden;
     min-width: 426px;
+    align-items: center;
 }
 
 .romMedia {
-    width: auto;
-    height: 40%;
-    margin-left: auto;
-    margin-right: auto;
+    width: 80%;
+    flex-grow: 1;
     border-radius: 20%;
     box-shadow: 5px 5px 5px 5px #888;
+}
+
+.romBoxContainer {
+    position: absolute;
+    width: 50%;
+    height: 80%;
+    transform: translate(-50%, -50%);
+    left: 25%;
+    top: 50%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.romBox {
+    border-radius: 20px;
+    box-shadow: 0 0 5px #888;
+    width: 40%;
+    margin: auto;
+    height: 25%;
+    background-size: 100% 100%;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes romBoxPulse {
+    0% {
+        box-shadow: 0 0 10px 10px #85C1E9;
+    }
+
+    50% {
+        box-shadow: 0 0 10px 10px #3498DB;
+    }
+
+    100% {
+        box-shadow: 0 0 10px 10px #85C1E9;
+    }
 }

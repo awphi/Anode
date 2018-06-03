@@ -29,7 +29,11 @@ Games.openGame = function(gameConsole, game) {
     //Wait configured time
     window.setTimeout(function() {
         app.remote.getCurrentWindow().setAlwaysOnTop(false);
-        Games.focusChild();
+        // Issue with some emulators means you have to focus multiple times - it doesn't affect it in anyway aside from fixing 
+        // an occasional failure to focus.
+        for(var i = 0; i < 10; i ++) {
+            Games.focusChild();
+        }
     }, config.waitTime);
 }
 

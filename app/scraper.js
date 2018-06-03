@@ -1,11 +1,13 @@
-const path = require("path");
-const fs = require("fs");
-const yaml = require("js-yaml");
 const http = require("http");
 
 const platformDict = {};
 const processQueue = [];
 var current = 0;
+
+function getGameProperty(result, prop) {
+    var prop = result.getElementsByTagName(prop)[0];
+    return prop == null ? "Unknown" : prop.innerHTML;
+}
 
 function gamesDBSearch(term) {
     var request = $.ajax({
@@ -16,7 +18,12 @@ function gamesDBSearch(term) {
         var results = result.getElementsByTagName("Game");
         var ret = [];
         for(var i = 0; i < results.length; i ++) {
-            ret.push({id:results[i].getElementsByTagName("id")[0].innerHTML, title:results[i].getElementsByTagName("GameTitle")[0].innerHTML, release:results[i].getElementsByTagName("ReleaseDate")[0].innerHTML, platform:results[i].getElementsByTagName("Platform")[0].innerHTML});
+            var id = getGameProperty(results[i], "id");
+            var title = getGameProperty(results[i], "GameTitle");
+            var release = getGameProperty(results[i], "ReleaseDate");
+            var platform = getGameProperty(results[i], "Platform");
+
+            ret.push({id: id, title: title, release: release, platform: platform});
         }
         loadResultsToTable(ret, current);
     });
@@ -38,21 +45,21 @@ function gamesDBFetchGame(id, procObj) {
             return;
         }
 
-        const dir = plat + "/roms/" + title;
+        const dir = plat + "/roms/" + title.replace(/[^a-zA-Z0-9-_\.]/g, '');;
 
         //-- Create dir --
         if (!fs.existsSync(dir)){
-            fs.mkdirSync(dir,null,true);
+            fs.mkdirSync(dir, null,true);
         }
 
         //-- Metadata.yml --
         createMetadataFile(result, dir);
 
         //-- Download boxart --
-        const imgUrl = String(result.getElementsByTagName("baseImgUrl")[0].innerHTML) + String($(result).find("boxart[side="front"]").text());
+        const imgUrl = String(result.getElementsByTagName("baseImgUrl")[0].innerHTML) + String($(result).find("boxart[side='front']").text());
         var file = fs.createWriteStream(dir + "/media.png");
         http.get(imgUrl, function(response) {
-              response.pipe(file);
+            response.pipe(file);
         });
 
         //-- Copy rom file over, rename it and delete this one! --
@@ -78,9 +85,9 @@ function createMetadataFile(result, dir) {
 
 function getPlatformDir(id) {
     if(Object.keys(platformDict).length == 0) {
-        var emulators = fs.readdirSync("./Emulators");
+        var emulators = fs.readdirSync(Files.emulatorsLocation);
         for(var i = 0; i < emulators.length; i ++) {
-            platformDict[String(yaml.safeLoad(fs.readFileSync(Core.emulatorsLocation + "/" + emulators[i] + "/config.yml","utf-8")).platformId)] = Core.emulatorsLocation + "/" + emulators[i];
+            platformDict[String(yaml.safeLoad(fs.readFileSync(Files.emulatorsLocation + "/" + emulators[i] + "/config.yml","utf-8")).platformId)] = Files.emulatorsLocation + "/" + emulators[i];
         }
     }
     return platformDict[String(id)];
@@ -157,7 +164,7 @@ function loadResultsToTable(results, number) {
             cell = row.insertCell(3);
             cell.innerHTML = results[i].platform;
             cell = row.insertCell(4);
-            cell.innerHTML = "<input type="radio" name="optradio">";
+            cell.innerHTML = "<input type='radio' name='optradio'>";
         }
     }
 }
@@ -167,4 +174,5 @@ function isDirEmpty(dir) {
     return !files.length;
 }
 
+Files.reloadConfig(true);
 processRoms();

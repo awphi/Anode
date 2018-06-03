@@ -1,45 +1,45 @@
-const Blocks = {};
+const Blocks = {
+    core: {}
+}
 
-//Creates a new emulatorBlock at the top or bottom by giving it"s "top" style text
-//    \-> Good values I found are -20% for top and 120% for bottom
+Blocks.core.applyStyle = function(div, style) {
+    if(typeof(style) !== "object") {
+        return div;
+    }
+
+    for (var property in style) {
+        if (style.hasOwnProperty(property)) {
+            var str = '' + property;
+            div.style[str] = style[str];
+        }
+    }
+
+    return div;
+}
+
+//Creates a new emulator description block at the top or bottom by giving it"s "top" style text
 Blocks.newEmulatorBlock = function(top, gameConsole) {
     var div = document.createElement("div");
     div.className = "emulatorBlock";
-    $(div).css("background-image", "url(" + Core.emulatorsLocation + "/" + gameConsole + "/media.png)");
+    $(div).css("background-image", "url(" + Files.emulatorsLocation + "/" + gameConsole + "/media.png)");
     div.style.top = top;
     document.getElementById("body").appendChild(div);
     return div;
 }
 
-// TODO: Clean this up w/ jQuery asap
 Blocks.newRomBlock = function(style, emulator, gameNumber) {
-    const div = document.createElement("div");
+    const wrapper = Blocks.core.applyStyle(document.createElement("div"), style);
+    wrapper.className = "romBlockWrapper";
 
+    const div = document.createElement("div");
     div.className = "romBlock";
-    for (var property in style) {
-        if (style.hasOwnProperty(property)) {
-            var str = '' + property;
-            $(div).css(str, style[str]);
-        }
-    }
 
     const title = document.createElement("h1");
-
-    if(emulator.roms[gameNumber] == null) {
-        title.innerHTML = "No games available for " + emulator;
-        $(title).css("margin","auto");
-        $(title).css("padding","5%");
-        div.appendChild(title);
-        document.getElementById("body").appendChild(div);
-        return div;
-    }
-
     title.innerHTML = emulator.roms[gameNumber];
     div.appendChild(title);
 
     const subtitle = document.createElement("h1");
     $(subtitle).css("color","rgba(0,0,0,0.5)");
-    $(subtitle).css("font-size","1.6vw");
     subtitle.innerHTML = emulator.roms[gameNumber].metadata.developer + " - " + emulator;
     div.appendChild(subtitle);
 
@@ -61,6 +61,40 @@ Blocks.newRomBlock = function(style, emulator, gameNumber) {
     counter.innerHTML = String(gameNumber + 1) + "/" + String(emulator.roms.length);
     div.appendChild(counter);
 
-    document.getElementById("body").appendChild(div);
+    wrapper.appendChild(div);
+
+    $("body").append(wrapper);
+    return wrapper;
+}
+
+Blocks.core.newRomBox = function(emulator, gameNumber) {
+    const div = document.createElement("div");
+    div.className = "romBox";
+    div.setAttribute("index", gameNumber);
+
+    if(emulator == null) {
+        $(div).css("visibility", "hidden");
+    } else {
+        // Apostrephes are not escaped properly in encodeURI so I added this to do it manually.
+        var str = encodeURI(emulator.roms[gameNumber].media).replace("'", "%27");
+        div.style.backgroundImage = "url(" + str + ")";
+    }
+
+    return div;
+}
+
+// Generates a new rom box container with the first 6 roms
+Blocks.newRomBoxContainer = function(style, emulator, start) {
+    const div = Blocks.core.applyStyle(document.createElement("div"), style);
+    div.className = "romBoxContainer";
+    for(var i = start; i < start + 6; i ++) {
+        if(i < emulator.roms.length) {
+            div.appendChild(Blocks.core.newRomBox(emulator, i));
+        } else {
+            div.appendChild(Blocks.core.newRomBox(null, i));
+        }
+    }
+
+    $("body").append(div);
     return div;
 }
