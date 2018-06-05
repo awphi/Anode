@@ -5,7 +5,7 @@ const Core = {
 
 Core.setCurrentRom = function(val) {
     var visible = 0;
-    var selector = $(".romBox");
+    var selector = $(".rom-box");
     for(var i = 0; i < selector.length; i ++) {
         if(selector[i].style.visibility !== "hidden") {
             visible ++;
@@ -18,7 +18,7 @@ Core.setCurrentRom = function(val) {
 
     $(selector[Core.currentRom % 6]).css("animation-name", "");
     Core.currentRom = val;
-    $(selector[Core.currentRom % 6]).css("animation-name", "romBoxPulse");
+    $(selector[Core.currentRom % 6]).css("animation-name", "rom-box-breathe");
 }
 
 Files.reloadConfig(false);

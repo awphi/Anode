@@ -64,4 +64,5 @@ typings/
 #Decluttering
 .DS_Store
 
-DS4Windows/
+#Compilation files
+dist/

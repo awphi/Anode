@@ -52,7 +52,7 @@ function gamesDBFetchGame(id, procObj) {
             fs.mkdirSync(dir, null,true);
         }
 
-        //-- Metadata.yml --
+        //-- Metadata.json --
         createMetadataFile(result, dir);
 
         //-- Download boxart --
@@ -77,8 +77,8 @@ function createMetadataFile(result, dir) {
     for(var i = 1; i < result.getElementsByTagName("Genres")[0].childNodes.length; i ++) {
         genres = genres + ", " + result.getElementsByTagName("Genres")[0].childNodes[i].innerHTML;
     }
-    const data = yaml.safeDump({description:description,developer:developer,release:release,players:players,genres:genres});
-    fs.writeFile(dir + "/metadata.yml", data, (err) => {
+    const data = JSON.stringify({description:description,developer:developer,release:release,players:players,genres:genres});
+    fs.writeFile(dir + "/metadata.json", data, (err) => {
         if (err) throw err;
     });
 }
@@ -87,10 +87,11 @@ function getPlatformDir(id) {
     if(Object.keys(platformDict).length == 0) {
         var emulators = fs.readdirSync(Files.emulatorsLocation);
         for(var i = 0; i < emulators.length; i ++) {
-            platformDict[String(yaml.safeLoad(fs.readFileSync(Files.emulatorsLocation + "/" + emulators[i] + "/config.yml","utf-8")).platformId)] = Files.emulatorsLocation + "/" + emulators[i];
+            const obj = JSON.parse(fs.readFileSync(Files.emulatorsLocation + "/" + emulators[i] + "/config.json","utf-8");
+            platformDict["" + obj.platformId] = Files.emulatorsLocation + "/" + emulators[i];
         }
     }
-    return platformDict[String(id)];
+    return platformDict["" + id];
 }
 
 //Loads the process queue & sets up the first entry in the table

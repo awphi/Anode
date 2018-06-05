@@ -1,9 +1,10 @@
 const path = require("path");
 const fs = require("fs");
-const yaml = require("js-yaml");
+const Config = require('electron-config');
 
 const Files = {
-    emulatorsLocation: "./Emulators"
+    emulatorsLocation: "./Emulators",
+    config: new Config()
 };
 
 Files.getRomPath = function(gameConsole, game) {
@@ -16,10 +17,11 @@ Files.getRomPath = function(gameConsole, game) {
 }
 
 Files.reloadConfig = function(scraperMode) {
-    if(Files.getAnnodeConfig() != null) {
-        //If undefined OR no config file exists - look for emulator pack in dir of application
-        Files.emulatorsLocation = Files.getAnnodeConfig()["emulators-location"] == "" ? "./Emulators" : Files.getAnnodeConfig()["emulators-location"];
+    if(Files.config.get('emulatorsLocation') == null) {
+        alert('Emulators location is not set please set it in the config section of the F3 dev menu');
     }
+
+    Files.emulatorsLocation = Files.config.get('emulatorsLocation');
 
     if(!scraperMode) {
         Core.emulatorWheel = Files.getEmulators();
@@ -47,10 +49,10 @@ Files.getEmulators = function() {
             for(var j = 0; j < roms.length; j ++) {
                 emulators[i].roms[j] = new String(roms[j]);
                 emulators[i].roms[j].media = Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + roms[j] + "/media.png";
-                if(fs.existsSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + roms[j] + "/metadata.yml")) {
-                    emulators[i].roms[j].metadata = yaml.safeLoad(fs.readFileSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + roms[j] + "/metadata.yml","utf-8"));
+                if(fs.existsSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + roms[j] + "/metadata.json")) {
+                    emulators[i].roms[j].metadata = JSON.parse(fs.readFileSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + roms[j] + "/metadata.json"));
                 } else {
-                    //Return deafault object in case of deleted metadata.yml for whatever reason
+                    //Return deafault object in case of deleted metadata.json for whatever reason
                     emulators[i].roms[j].metadata = {description:"No description available currently!", developer:"Unknown Developer", release:"Unkown",players:"Unknown",genres:"Unknown"};
                 }
             }
@@ -59,16 +61,12 @@ Files.getEmulators = function() {
     return emulators;
 }
 
-Files.getAnnodeConfig = function() {
-    return yaml.safeLoad(fs.readFileSync("./config.yml"), "utf-8");
-}
-
 Files.getConfig = function(gameConsole) {
     var path = Files.getEmulatorPath(gameConsole);
     if(path != null) {
-        path = path.split(gameConsole)[0] + gameConsole + "/config.yml";
+        path = path.split(gameConsole)[0] + gameConsole + "/config.json";
         try {
-            return yaml.safeLoad(fs.readFileSync(path),"utf-8");
+            return JSON.parse(fs.readFileSync(path));
         } catch (e) {
             //Returns a default object
             return {cliArgs:[], waitTime:500};
