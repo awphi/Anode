@@ -22,6 +22,9 @@ body {
     overflow : hidden;
     height: 100%;
     margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 html {
@@ -72,6 +75,7 @@ html {
     flex-direction: column;
     box-shadow: 10px 10px 10px 10px #888;
     align-items: center;
+    word-break: break-word;
 }
 
 .rom-media {
@@ -124,8 +128,8 @@ html {
     width: 20%;
     height: auto;
     position: relative;
-    background-color: red;
     margin: 0;
+    filter: drop-shadow(5px 5px 5px #888);
 }
 
 @keyframes rom-box-breathe {

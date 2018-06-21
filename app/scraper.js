@@ -1,15 +1,20 @@
 const http = require("http");
+const app = require("electron");
 
 const platformDict = {};
 const processQueue = [];
 var current = 0;
 
-function getGameProperty(result, prop) {
+function getGameProperty(result, prop, placeholder = "???") {
     var prop = result.getElementsByTagName(prop)[0];
-    return prop == null ? "Unknown" : prop.innerHTML;
+    return prop == null ? placeholder : prop.innerHTML;
 }
 
 function gamesDBSearch(term) {
+    clearTable();
+    singleRowText("Loading...");
+    document.getElementById("scrape-title").innerHTML = "<b>Scrape results for:</b> " + processQueue[current].fullfilename;
+
     var request = $.ajax({
         url: "http://thegamesdb.net/api/GetGamesList.php?name=" + term
     });
@@ -69,15 +74,24 @@ function gamesDBFetchGame(id, procObj) {
 }
 
 function createMetadataFile(result, dir) {
-    const description = result.getElementsByTagName("Overview")[0].innerHTML;
-    const developer = result.getElementsByTagName("Developer")[0].innerHTML;
-    const release = result.getElementsByTagName("ReleaseDate")[0].innerHTML;
-    const players = result.getElementsByTagName("Players")[0].innerHTML;
-    var genres = result.getElementsByTagName("Genres")[0].childNodes[0].innerHTML;
-    for(var i = 1; i < result.getElementsByTagName("Genres")[0].childNodes.length; i ++) {
-        genres = genres + ", " + result.getElementsByTagName("Genres")[0].childNodes[i].innerHTML;
+    const description = getGameProperty(result, "Overview", "No description available...");
+    const developer = getGameProperty(result, "Developer");
+    const release = getGameProperty(result, "ReleaseDate");
+    const players = getGameProperty(result, "Players");
+    const title = getGameProperty(result, "GameTitle")
+
+    var genres = "Unkown";
+
+    if(result.getElementsByTagName("Genres")[0] != null) {
+        genres = result.getElementsByTagName("Genres")[0].childNodes[0].innerHTML;
+
+        for(var i = 1; i < result.getElementsByTagName("Genres")[0].childNodes.length; i ++) {
+            genres = genres + ", " + result.getElementsByTagName("Genres")[0].childNodes[i].innerHTML;
+        }
     }
-    const data = JSON.stringify({description:description,developer:developer,release:release,players:players,genres:genres});
+
+    const data = JSON.stringify({title: title, description: description, developer: developer, release: release, players: players, genres: genres});
+
     fs.writeFile(dir + "/metadata.json", data, (err) => {
         if (err) throw err;
     });
@@ -87,7 +101,7 @@ function getPlatformDir(id) {
     if(Object.keys(platformDict).length == 0) {
         var emulators = fs.readdirSync(Files.emulatorsLocation);
         for(var i = 0; i < emulators.length; i ++) {
-            const obj = JSON.parse(fs.readFileSync(Files.emulatorsLocation + "/" + emulators[i] + "/config.json","utf-8");
+            const obj = JSON.parse(fs.readFileSync(Files.emulatorsLocation + "/" + emulators[i] + "/config.json"));
             platformDict["" + obj.platformId] = Files.emulatorsLocation + "/" + emulators[i];
         }
     }
@@ -104,13 +118,13 @@ function processRoms() {
         var roms = fs.readdirSync("./in");
         for(var i = 0; i < roms.length; i ++) {
             var filename = roms[i].split(".")[0];
-            processQueue.push({filename:filename, path:"./in/" + roms[i], fullfilename:roms[i]});
+            processQueue.push({filename: filename, path: "./in/" + roms[i], fullfilename: roms[i]});
         }
         current = 0;
         gamesDBSearch(processQueue[current].filename);
     } else {
         alert("New roms directory is empty!");
-        document.getElementsByClassName("tableContainer")[0].hidden = true;
+        document.getElementsByClassName("table-container")[0].hidden = true;
     }
 }
 
@@ -118,37 +132,33 @@ function confirmChoice(skip) {
     if(!skip && $("input[name=optradio]:checked").length == 0) {
         return;
     }
+
     if(!skip) {
         const id = $("input[name=optradio]:checked")[0].parentElement.parentElement.childNodes[0].innerHTML;
         gamesDBFetchGame(id,processQueue[current]);
     }
+
     current++;
+
     if(current == processQueue.length) {
         //End of queue reached
-        document.getElementsByClassName("tableContainer")[0].hidden = true;
+        document.getElementsByClassName("table-container")[0].hidden = true;
         alert("All done!");
         return;
     }
+
     gamesDBSearch(processQueue[current].filename);
+    window.scrollTo(0, 0);
 }
 
 function loadResultsToTable(results, number) {
     if((number >= 0 || number < processQueue.length) && processQueue.length > 0) {
-        document.getElementById("scrapeTitle").innerHTML = "Scrape results for: " + processQueue[number].fullfilename;
-
-        //Clear old values
-        const table = document.getElementById("tableBody");
-        while (table.firstChild) {
-            table.removeChild(table.firstChild);
-        }
+        const table = document.getElementById("table-body");
+        clearTable();
 
         //Deal with no results found
         if(results.length == 0) {
-            var row = table.insertRow(table.rows.length);
-            for(var i = 0; i < 5; i ++) {
-                cell = row.insertCell(i);
-                cell.innerHTML = "No results found!";
-            }
+            singleRowText("No results found!");
             return;
         }
 
@@ -165,8 +175,25 @@ function loadResultsToTable(results, number) {
             cell = row.insertCell(3);
             cell.innerHTML = results[i].platform;
             cell = row.insertCell(4);
-            cell.innerHTML = "<input type='radio' name='optradio'>";
+            cell.innerHTML = "<input type='radio' name='optradio' onclick='window.scrollTo(0, document.body.scrollHeight);'>";
         }
+    }
+}
+
+function singleRowText(str) {
+    const table = document.getElementById("table-body");
+    const row = table.insertRow(table.rows.length);
+
+    for(var i = 0; i < 5; i ++) {
+        cell = row.insertCell(i);
+        cell.innerHTML = str;
+    }
+}
+
+function clearTable() {
+    const table = document.getElementById("table-body");
+    while (table.firstChild) {
+        table.removeChild(table.firstChild);
     }
 }
 
@@ -175,5 +202,6 @@ function isDirEmpty(dir) {
     return !files.length;
 }
 
+app.remote.getCurrentWindow().setAlwaysOnTop(false);
 Files.reloadConfig(true);
 processRoms();

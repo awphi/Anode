@@ -8,7 +8,7 @@ SearchSort.openPanel = function() {
     const div = document.createElement("div");
     div.id = "searchsort";
     div.style.width = div.style.height = "100%";
-    $("body").append(div);
+    $("#body").append(div);
 }
 
 SearchSort.closePanel = function() {

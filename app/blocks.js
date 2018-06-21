@@ -28,7 +28,7 @@ Blocks.newEmulatorBlock = function(top, gameConsole) {
     var div = Blocks.core.createClassedElement("emulator-block");
     $(div).css("background-image", "url(" + Files.emulatorsLocation + "/" + gameConsole + "/media.png)");
     div.style.top = top;
-    document.getElementById("body").appendChild(div);
+    $("#body").append(div);
     return div;
 }
 
@@ -38,7 +38,7 @@ Blocks.newRomPreview = function(style, emulator, gameNumber) {
     const div = Blocks.core.createClassedElement("rom-preview");
 
     const title = document.createElement("h1");
-    title.innerHTML = emulator.roms[gameNumber];
+    title.innerHTML = emulator.roms[gameNumber].metadata.title;
     div.appendChild(title);
 
     const subtitle = document.createElement("h1");
@@ -64,7 +64,7 @@ Blocks.newRomPreview = function(style, emulator, gameNumber) {
 
     wrapper.appendChild(div);
 
-    $("body").append(wrapper);
+    $("#body").append(wrapper);
     return wrapper;
 }
 
@@ -103,7 +103,7 @@ Blocks.newRomBoxContainer = function(style, emulator, start) {
     arrow1.appendChild(img);
 
     const arrow2 = arrow1.cloneNode(true);
-    arrow2.childNodes[0].style.transform = "rotate(180deg)";
+    arrow1.childNodes[0].style.transform = "translate(-50%, -50%) rotate(180deg)";
 
     arrow1.style.visibility = start > 0 ? '' : 'hidden';
     arrow2.style.visibility = start + 6 < emulator.roms.length ? '' : 'hidden';
@@ -112,6 +112,6 @@ Blocks.newRomBoxContainer = function(style, emulator, start) {
     wrapper.appendChild(div);
     wrapper.appendChild(arrow2);
 
-    $("body").append(wrapper);
+    $("#body").append(wrapper);
     return wrapper;
 }

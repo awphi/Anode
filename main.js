@@ -60,7 +60,7 @@ app.on('ready', () => {
         if(currentWindow == 'main') {
             currentWindow = 'scraper';
             mainWindow.loadURL(url.format({
-                pathname: path.join(__dirname, 'scraper.html'),
+                pathname: path.join(__dirname, 'dev.html'),
                 protocol: 'file:',
                 slashes: true
             }));

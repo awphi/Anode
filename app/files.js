@@ -37,8 +37,8 @@ Files.getEmulatorPath = function(gameConsole) {
     }
 }
 
-//Returns array of emulator objects which contain its media, roms, rom media, rom metadata etc. - VITAL global object
-// TODO: Remove utter dependency on this object and spread it out
+// Used to create Core.emulatorWheel, currently a large memory hog - maybe cut down by dynamically loading metadata etc. by reading files on the fly
+// This will: slow runtime, speed up loadtime and reduce ram usage
 Files.getEmulators = function() {
     var emulators = fs.readdirSync(Files.emulatorsLocation);
     for(var i = 0; i < emulators.length; i ++) {
@@ -47,13 +47,13 @@ Files.getEmulators = function() {
             var roms = fs.readdirSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms");
             emulators[i].roms = [];
             for(var j = 0; j < roms.length; j ++) {
-                emulators[i].roms[j] = new String(roms[j]);
+                emulators[i].roms[j] = {};
                 emulators[i].roms[j].media = Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + roms[j] + "/media.png";
                 if(fs.existsSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + roms[j] + "/metadata.json")) {
                     emulators[i].roms[j].metadata = JSON.parse(fs.readFileSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + roms[j] + "/metadata.json"));
                 } else {
-                    //Return deafault object in case of deleted metadata.json for whatever reason
-                    emulators[i].roms[j].metadata = {description:"No description available currently!", developer:"Unknown Developer", release:"Unkown",players:"Unknown",genres:"Unknown"};
+                    //Return default object in case of deleted metadata.json for whatever reason
+                    emulators[i].roms[j].metadata = {description:"No description available...", developer:"???", release:"???", players:"???", genres:"???"};
                 }
             }
         }

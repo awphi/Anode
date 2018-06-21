@@ -1,0 +1,27 @@
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" type="text/css" href="app/css/config.css">
+    <link rel="stylesheet" type="text/css" charset="utf-8" href="app/fonts/stylesheet.css">
+    <link rel="stylesheet" type="text/css" charset="utf-8" href="app/libraries/bootstrap.min.css">
+
+    <script src="app/libraries/jquery-3.2.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
+    <script src="app/libraries/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5 config-pane flex-column">
+                <h1><b>Global Config</b></h1>
+                <button type="button" class="btn btn-primary" onclick='updateCoreSettings();'>Select Emulator Pack</button>
+                <button type="button" class="btn btn-primary" onclick='updateCoreSettings();'>Save Settings</button>
+            </div>
+            <div class="col-md-5 config-pane flex-column">
+                <h1><b>Emulator Config</b></h1>
+            </div>
+        </div>
+    </div>
+    <script src="app/config.js"></script>
+</body>

@@ -24,7 +24,7 @@ Games.openGame = function(gameConsole, game) {
         if (error) throw error;
     });
 
-    Games.focusAnnode();
+    Games.focusAnode();
 
     //Wait configured time
     window.setTimeout(function() {
@@ -46,9 +46,9 @@ Games.focusChild = function() {
     });
 }
 
-Games.focusAnnode = function() {
+Games.focusAnode = function() {
     processWindows.getProcesses(function(err, processes) {
-        var focuses = processes.filter(p => p.mainWindowTitle.indexOf("Annode") >= 0);
+        var focuses = processes.filter(p => p.mainWindowTitle.indexOf("Anode") >= 0);
         focuses = focuses.filter(p => p.processName.indexOf("electron") >= 0);
 
         if(focuses.length > 0) {
@@ -63,7 +63,7 @@ app.ipcRenderer.on("childProc", (event, arg) => {
         Games.emulatorProc.kill();
     }
     //Refocus on close
-    Games.focusAnnode();
+    Games.focusAnode();
     Games.emulatorProc = null; 
     app.remote.getCurrentWindow().setAlwaysOnTop(true);
     Animation.unpause();

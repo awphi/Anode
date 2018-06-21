@@ -32,4 +32,6 @@ for(var i = 0; i < 3; i ++) {
     $(newEm).css("background-image", "url(" + Files.emulatorsLocation + "/" + Core.emulatorWheel[i] + "/media.png)");
     topVal += 30;
 }
+
 Animation.allowAnimation = true;
+require("electron").remote.getCurrentWindow().setAlwaysOnTop(true);

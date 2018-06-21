@@ -1,0 +1,21 @@
+.config-pane {
+    border-radius: 30px;
+    background-color: #D6EAF8;
+    margin: 20px 40px 0 40px;
+
+    box-shadow: 10px 10px 10px 10px #888;
+}
+
+.flex-column {
+    display: flex; 
+    align-items: center;
+    flex-direction: column;
+}
+
+.half {
+    width: 50%;
+}
+
+.btn {
+    margin: 20px;
+}

@@ -3,34 +3,35 @@ h1 {
     text-align: center;
     margin: 0%;
     font-size: 24pt;
-    font-family: "press_start_2pregular";
 }
 
 p, h2 {
     color: rgba(0,0,0,0.5);
     text-align: center;
     font-size: 14pt;
-    font-family: "upheaval_tt_brkregular";
     margin: 0%;
     padding: 2%;
 }
 
-.tableContainer {
+.table-container {
     text-align: center;
-    width: 100%;
-    height: 100%;
     display: flex;
     flex: auto;
     flex-direction: column;
 }
 
-button {
+.flex {
+    display: flex;
+}
+
+.scraper-button {
+    width: 50%;
     min-height: 4%;
     margin-top: 2%;
+    margin-bottom: 2%;
 }
 
 table {
-    font-family: "upheaval_tt_brkregular";
     border-collapse: collapse;
 }
 

@@ -1,0 +1,62 @@
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" type="text/css" href="app/css/dev.css">
+    <link rel="stylesheet" type="text/css" charset="utf-8" href="app/fonts/stylesheet.css">
+    <link rel="stylesheet" type="text/css" charset="utf-8" href="app/libraries/bootstrap.min.css">
+
+    <script src="app/libraries/jquery-3.2.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
+    <script src="app/libraries/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">Anode</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Scraper <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="config.html">Config</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container">
+        <div class="col-sm">
+            <div class="table-container">
+                <h1 id="scrape-title"><b>Scrape results for:</b> 'No game selected'</h1>
+                
+                <table id="results-table" style="width: 100%; text-align: center;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Release</th>
+                            <th>Platform</th>
+                            <th>Correct?</th>
+                         </tr>
+                     </thead>
+                     
+                     <tbody id='table-body'>
+                     </tbody>
+                </table>
+
+                <div class="flex">
+                    <button class="scraper-button" type="button" onclick="confirmChoice(false)">Confirm Choice</button>
+                    <button class="scraper-button" type="button" onclick="confirmChoice(true)">Skip</button>
+                </flex>
+            </div>
+        </div>
+    </div>
+
+    <script src="app/files.js"></script>
+    <script src="app/scraper.js"></script>
+</body>

@@ -186,7 +186,7 @@ Animation.pause = function() {
     var img = document.createElement("img");
     img.src = "./app/images/loading.svg";
     div.appendChild(img);
-    $("body").append(div);
+    $("#body").append(div);
 }
 
 Animation.unpause = function() {

@@ -1,5 +1,5 @@
 {
-  "name": "Annode",
+  "name": "Anode",
   "version": "0.9.1",
   "description": "Electron-based arcade frontloader.",
   "main": "main.js",
@@ -19,9 +19,9 @@
     "node-process-windows": "0.0.2"
   },
   "build": {
-    "appId": "annode",
+    "appId": "anode",
     "mac": {
-      "category": "annode.arcade.front"
+      "category": "anode.arcade.front"
     }
   },
   "scripts": {
