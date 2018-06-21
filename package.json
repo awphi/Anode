@@ -1,6 +1,6 @@
 {
   "name": "Anode",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "Electron-based arcade frontloader.",
   "main": "main.js",
   "author": "awphi",
