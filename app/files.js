@@ -12,12 +12,12 @@ Files.getRomPath = function(gameConsole, game) {
 
     var cont = fs.readdirSync(Files.emulatorsLocation + "/" + gameConsole + "/roms/" + game);
     for(var i = 0; i < cont.length; i ++) {
-        if(cont[i].split(".")[0] == "rom") return Files.emulatorsLocation + "/" + gameConsole + "/roms/" + game + "/" + cont[i];
+        if(cont[i].split(".")[0] === "rom") return Files.emulatorsLocation + "/" + gameConsole + "/roms/" + game + "/" + cont[i];
     }
-}
+};
 
 Files.reloadConfig = function(scraperMode) {
-    if(Files.config.get('emulatorsLocation') == null) {
+    if(Files.config.get('emulatorsLocation') == null || Files.config.get('emulatorsLocation') === "") {
         alert('Emulators location is not set please set it in the config section of the F3 dev menu');
     }
 
@@ -26,14 +26,14 @@ Files.reloadConfig = function(scraperMode) {
     if(!scraperMode) {
         Core.emulatorWheel = Files.getEmulators();
     }
-}
+};
 
 Files.getEmulatorPath = function(gameConsole) {
     if(!fs.existsSync(Files.emulatorsLocation + "/" + gameConsole + "/emulator")) return null;
 
     var cont = fs.readdirSync(Files.emulatorsLocation + "/" + gameConsole + "/emulator");
     for(var i = 0; i < cont.length; i ++) {
-        if(cont[i].split(".")[1] == "exe") return Files.emulatorsLocation + "/" + gameConsole + "/emulator/" + cont[i];
+        if(cont[i].split(".")[1] === "exe") return Files.emulatorsLocation + "/" + gameConsole + "/emulator/" + cont[i];
     }
 }
 
@@ -53,13 +53,13 @@ Files.getEmulators = function() {
                     emulators[i].roms[j].metadata = JSON.parse(fs.readFileSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + roms[j] + "/metadata.json"));
                 } else {
                     //Return default object in case of deleted metadata.json for whatever reason
-                    emulators[i].roms[j].metadata = {description:"No description available...", developer:"???", release:"???", players:"???", genres:"???"};
+                    emulators[i].roms[j].metadata = {description:"No description available...", developer:"???", release:"???", players:"???", genres:"???", title:"???"};
                 }
             }
         }
     }
     return emulators;
-}
+};
 
 Files.getConfig = function(gameConsole) {
     var path = Files.getEmulatorPath(gameConsole);
@@ -72,4 +72,4 @@ Files.getConfig = function(gameConsole) {
             return {cliArgs:[], waitTime:500};
         }
     }
-}
+};

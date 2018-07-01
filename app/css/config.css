@@ -7,13 +7,17 @@
 }
 
 .flex-column {
-    display: flex; 
-    align-items: center;
+    display: flex;
     flex-direction: column;
 }
 
-.half {
-    width: 50%;
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.mb-05 {
+    margin-bottom: 0.5rem;
 }
 
 .btn {

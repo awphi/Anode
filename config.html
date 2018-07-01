@@ -13,15 +13,20 @@
 <body>
     <div class="container">
         <div class="row">
-            <div class="col-md-5 config-pane flex-column">
+            <div class="col-md-11 config-pane flex-column align-items-center">
                 <h1><b>Global Config</b></h1>
-                <button type="button" class="btn btn-primary" onclick='updateCoreSettings();'>Select Emulator Pack</button>
-                <button type="button" class="btn btn-primary" onclick='updateCoreSettings();'>Save Settings</button>
-            </div>
-            <div class="col-md-5 config-pane flex-column">
-                <h1><b>Emulator Config</b></h1>
+                <div class="flex-row align-items-center">
+                    <input type="checkbox" class="form-check-input" id="devMode">
+                    <label class="form-check-label" for="devMode">Dev Mode</label>
+                </div>
+                <div class="flex-row align-items-center">
+                    <button type="button" id="emulatorPack" class="btn btn-primary" onclick="selectDirectory('emulatorPack');">Select Emulator Pack</button>
+                    <p id="emulatorPackText" class="mb-05"></p>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="updateCoreSettings();">Save Settings</button>
             </div>
         </div>
     </div>
+
     <script src="app/config.js"></script>
 </body>

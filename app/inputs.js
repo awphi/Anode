@@ -12,7 +12,7 @@ const Inputs = {
             }
         }
     }
-}
+};
 
 /*
     -- Generic input handler --
@@ -25,7 +25,7 @@ const Inputs = {
         75 = toggle search/sort panel (K key)   
 */
 Inputs.core.handleInputs = function(code) {
-    if(code == 75 && Animation.scroll == ScrollEnum.ROMS) {
+    if(code === 75 && Animation.scroll === ScrollEnum.ROMS) {
         if(Animation.allowAnimation && !SearchSort.open) {
             SearchSort.openPanel();
         } else if(SearchSort.open) {
@@ -40,7 +40,7 @@ Inputs.core.handleInputs = function(code) {
     }
 
     // Starting a game in necessary
-    if(Animation.scroll == ScrollEnum.ROMS && code == 32) {
+    if(Animation.scroll === ScrollEnum.ROMS && code === 32) {
         Games.openGame(Core.emulatorWheel[1], Core.emulatorWheel[1].roms[Core.currentRom]);
         return;
     }    
@@ -62,22 +62,22 @@ Inputs.core.handleInputs = function(code) {
             break;
     }
 
-    if (Animation.scroll == ScrollEnum.ROMS) {
+    if (Animation.scroll === ScrollEnum.ROMS) {
         Animation.scrollRoms(dir);
-    } else if(Animation.scroll == ScrollEnum.EMULATORS) {
-        if(dir == ScrollDirEnum.UP || dir == ScrollDirEnum.DOWN) {
+    } else if(Animation.scroll === ScrollEnum.EMULATORS) {
+        if(dir === ScrollDirEnum.UP || dir === ScrollDirEnum.DOWN) {
             Animation.scrollEmulator(dir);
-        } else if(dir == ScrollDirEnum.RIGHT) {
+        } else if(dir === ScrollDirEnum.RIGHT) {
             Animation.openRomsMenu(Core.emulatorWheel[1]);
         }
     }
-}
+};
 
 //Keyboard
 window.onkeydown = function(e) {
-    var code = e.keyCode ? e.keyCode : e.which;
+    const code = e.keyCode ? e.keyCode : e.which;
     Inputs.core.handleInputs(code);
-}
+};
 
 //Gamepad
 window.addEventListener("gamepaddisconnected", function(e) {
@@ -86,12 +86,12 @@ window.addEventListener("gamepaddisconnected", function(e) {
 });
 
 Inputs.gamepad.buttonPressed = function(button) {
-    if (typeof(button) == "object") {
+    if (typeof(button) === "object") {
         return button.pressed;
     }
 
-    return button == 1.0;
-}
+    return button === 1.0;
+};
 
 Inputs.gamepad.pollInputs = function() {
     var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
@@ -116,4 +116,4 @@ Inputs.gamepad.pollInputs = function() {
             Inputs.gamepad.canPress[i] = true;
         }
     }
-}
+};
