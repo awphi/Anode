@@ -26,4 +26,4 @@ function selectDirectory(id) {
 
 $("#emulatorPack").prop("selected", config.get("emulatorsLocation"));
 $("#emulatorPackText").text(config.get("emulatorsLocation"));
-$("#devMode").prop("checked", config.get("devMode"));
+$("#devMode").prop("checked", config.get("dev"));

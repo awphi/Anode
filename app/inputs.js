@@ -75,8 +75,7 @@ Inputs.core.handleInputs = function(code) {
 
 //Keyboard
 window.onkeydown = function(e) {
-    const code = e.keyCode ? e.keyCode : e.which;
-    Inputs.core.handleInputs(code);
+    Inputs.core.handleInputs(e.which);
 };
 
 //Gamepad

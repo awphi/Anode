@@ -110,15 +110,15 @@ function getPlatformDir(id) {
 
 //Loads the process queue & sets up the first entry in the table
 function processRoms() {
-    if(!fs.existsSync("./in")) {
-        fs.mkdirSync("./in");
+    if(!fs.existsSync(Files.emulatorsLocation + "/in")) {
+        fs.mkdirSync(Files.emulatorsLocation + "/in");
     }
 
-    if(!isDirEmpty("./in")) {
-        var roms = fs.readdirSync("./in");
+    if(!isDirEmpty(Files.emulatorsLocation + "/in")) {
+        var roms = fs.readdirSync(Files.emulatorsLocation + "/in");
         for(var i = 0; i < roms.length; i ++) {
             var filename = roms[i].split(".")[0];
-            processQueue.push({filename: filename, path: "./in/" + roms[i], fullfilename: roms[i]});
+            processQueue.push({filename: filename, path: Files.emulatorsLocation + "/in/" + roms[i], fullfilename: roms[i]});
         }
         current = 0;
         gamesDBSearch(processQueue[current].filename);

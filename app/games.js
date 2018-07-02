@@ -1,5 +1,5 @@
 const child = require("child_process");
-const processWindows = require("node-process-windows");
+const processWindows = require("./process-windows/index");
 const app = require("electron");
 
 const Games = {
@@ -24,16 +24,15 @@ Games.openGame = function(gameConsole, game) {
         if (error) throw error;
     });
 
-    Games.focusAnode();
+	app.remote.getCurrentWindow().setAlwaysOnTop(false);
+	Games.focusAnode();
 
+	Games.focusChild();
     //Wait configured time
     window.setTimeout(function() {
-        app.remote.getCurrentWindow().setAlwaysOnTop(false);
-        // Issue with some emulators means you have to focus multiple times - it doesn't affect it in anyway aside from fixing 
-        // an occasional failure to focus.
-        for(var i = 0; i < 10; i ++) {
-            Games.focusChild();
-        }
+
+
+        Games.focusChild();
     }, config.waitTime);
 }
 
@@ -41,7 +40,7 @@ Games.focusChild = function() {
     processWindows.getProcesses(function(err, processes) {
         var focuses = processes.filter(p => String(p.pid).indexOf(String(Games.emulatorProc.pid)) >= 0);
         if(focuses.length > 0) {
-            processWindows.focusWindow(focuses[0]);
+    		processWindows.focusWindow(focuses[0].pid);
         }
     });
 }

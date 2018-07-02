@@ -41,13 +41,18 @@ Files.getEmulatorPath = function(gameConsole) {
 // This will: slow runtime, speed up loadtime and reduce ram usage
 Files.getEmulators = function() {
     var emulators = fs.readdirSync(Files.emulatorsLocation);
+
     for(var i = 0; i < emulators.length; i ++) {
+        if(emulators[i] === "in") {
+            emulators.splice(i, 1);
+        }
+
         emulators[i] = new String(emulators[i]);
         if(fs.existsSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms")) {
             var roms = fs.readdirSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms");
             emulators[i].roms = [];
             for(var j = 0; j < roms.length; j ++) {
-                emulators[i].roms[j] = {};
+                emulators[i].roms[j] = new String(roms[j]);
                 emulators[i].roms[j].media = Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + roms[j] + "/media.png";
                 if(fs.existsSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + roms[j] + "/metadata.json")) {
                     emulators[i].roms[j].metadata = JSON.parse(fs.readFileSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + roms[j] + "/metadata.json"));

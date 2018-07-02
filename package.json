@@ -1,33 +1,36 @@
 {
   "name": "Anode",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "Electron-based arcade frontloader.",
   "main": "main.js",
   "author": "awphi",
   "license": "ISC",
   "devDependencies": {
     "electron-builder": "^20.6.2",
-    "electron-prebuilt": "^1.4.13",
-    "electron-rebuild": "^1.6.0"
+    "electron-prebuilt": "^1.4.13"
   },
   "dependencies": {
     "child_process": "^1.0.2",
     "electron-config": "^1.0.0",
     "electron-localshortcut": "^2.0.2",
     "node-fs": "^0.1.7",
-    "node-gyp": "^3.6.2",
-    "node-process-windows": "0.0.2"
+    "node-gyp": "^3.6.2"
   },
   "build": {
     "appId": "anode",
     "mac": {
       "category": "anode.arcade.front"
-    }
+    },
+    "asar": true,
+    "asarUnpack": [
+      "process-windows/**/*.*"
+    ]
   },
   "scripts": {
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "start": "electron .",
-    "dev": "set NODE_ENV=dev && electron ."
+    "dev": "set NODE_ENV=dev && electron .",
+    "postinstall": "electron-builder install-app-deps"
   }
 }
