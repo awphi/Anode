@@ -24,13 +24,11 @@ Games.openGame = function(gameConsole, game) {
         if (error) throw error;
     });
 
-	app.remote.getCurrentWindow().setAlwaysOnTop(false);
-	Games.focusAnode();
+    Games.focusAnode();
 
-	Games.focusChild();
     //Wait configured time
     window.setTimeout(function() {
-
+        app.remote.getCurrentWindow().setAlwaysOnTop(false);
 
         Games.focusChild();
     }, config.waitTime);

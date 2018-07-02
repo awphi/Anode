@@ -16,7 +16,7 @@ function gamesDBSearch(term) {
     document.getElementById("scrape-title").innerHTML = "<b>Scrape results for:</b> " + processQueue[current].fullfilename;
 
     var request = $.ajax({
-        url: "http://thegamesdb.net/api/GetGamesList.php?name=" + term
+        url: "http://legacy.thegamesdb.net/api/GetGamesList.php?name=" + term
     });
 
     request.done(function(result) {
@@ -36,7 +36,7 @@ function gamesDBSearch(term) {
 
 function gamesDBFetchGame(id, procObj) {
     var request = $.ajax({
-        url: "http://thegamesdb.net/api/GetGame.php?id=" + id
+        url: "http://legacy.thegamesdb.net/api/GetGame.php?id=" + id
     });
     request.done(function (result) {
         //To be used as folder name
