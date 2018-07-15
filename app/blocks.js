@@ -37,13 +37,20 @@ Blocks.newRomPreview = function(style, emulator, gameNumber) {
 
     const div = Blocks.core.createClassedElement("rom-preview");
 
+    var meta;
+    if(emulator.roms[gameNumber].metadata != null) {
+        meta = JSON.parse(fs.readFileSync(emulator.roms[gameNumber].metadata));
+    } else {
+        meta = {description:"No description available...", developer:"???", release:"???", players:"???", genres:"???", title:"???"}
+    }
+
     const title = document.createElement("h1");
-    title.innerHTML = emulator.roms[gameNumber].metadata.title;
+    title.innerHTML = meta.title;
     div.appendChild(title);
 
     const subtitle = document.createElement("h1");
     $(subtitle).css("color","rgba(0,0,0,0.5)");
-    subtitle.innerHTML = emulator.roms[gameNumber].metadata.developer + " - " + emulator;
+    subtitle.innerHTML = meta.developer + " - " + emulator;
     div.appendChild(subtitle);
 
     const img = Blocks.core.createClassedElement("rom-media", "img");
@@ -51,11 +58,11 @@ Blocks.newRomPreview = function(style, emulator, gameNumber) {
     div.appendChild(img);
 
     const prop = document.createElement("p");
-    prop.innerHTML = "<b>Players:</b> " + emulator.roms[gameNumber].metadata.players + "<br><b>Release:</b> " + emulator.roms[gameNumber].metadata.release + "<br><b>Genres:</b> " + emulator.roms[gameNumber].metadata.genres;;
+    prop.innerHTML = "<b>Players:</b> " + meta.players + "<br><b>Release:</b> " + meta.release + "<br><b>Genres:</b> " + meta.genres;
     div.appendChild(prop);
 
     const metadata = document.createElement("p");
-    metadata.innerHTML = emulator.roms[gameNumber].metadata.description.substring(0,240) + "...";
+    metadata.innerHTML = meta.description.substring(0,240) + "...";
     div.appendChild(metadata);
 
     const counter = Blocks.core.createClassedElement("romCounter", "h2");

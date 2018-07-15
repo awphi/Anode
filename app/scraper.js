@@ -102,7 +102,13 @@ function getPlatformDir(id) {
         var emulators = fs.readdirSync(Files.emulatorsLocation);
         for(var i = 0; i < emulators.length; i ++) {
             const obj = JSON.parse(fs.readFileSync(Files.emulatorsLocation + "/" + emulators[i] + "/config.json"));
-            platformDict["" + obj.platformId] = Files.emulatorsLocation + "/" + emulators[i];
+            if(typeof obj.platformId === "number") {
+                platformDict["" + obj.platformId] = Files.emulatorsLocation + "/" + emulators[i];
+            } else if(typeof obj.platformId === "object") {
+                for(var j = 0; j < obj.platformId.length; j ++) {
+                    platformDict["" + obj.platformId[j]] = Files.emulatorsLocation + "/" + emulators[i];
+                }
+            }
         }
     }
     return platformDict["" + id];

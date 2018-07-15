@@ -2,7 +2,6 @@ var child = require("child_process");
 var path = require("path");
 
 var windowsFocusManagementBinary = __dirname + "\\windows-console-app\\windows-console-app.exe";
-console.log(windowsFocusManagementBinary);
 
 var isWindows = process.platform === "win32";
 var noop = function () { };
@@ -126,7 +125,6 @@ function executeProcess(args, callback, mapper) {
         }
 
         var returnObject = JSON.parse(stdout);
-        console.log(returnObject);
 
         if (returnObject.Error) {
             console.log(returnObject.Error);

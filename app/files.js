@@ -8,6 +8,10 @@ const Files = {
 };
 
 Files.getRomPath = function(gameConsole, game) {
+    if(gameConsole == "MAME") {
+        return game;
+    }
+
     if(!fs.existsSync(Files.emulatorsLocation + "/" + gameConsole + "/roms/" + game)) return null;
 
     var cont = fs.readdirSync(Files.emulatorsLocation + "/" + gameConsole + "/roms/" + game);
@@ -32,9 +36,18 @@ Files.getEmulatorPath = function(gameConsole) {
     if(!fs.existsSync(Files.emulatorsLocation + "/" + gameConsole + "/emulator")) return null;
 
     var cont = fs.readdirSync(Files.emulatorsLocation + "/" + gameConsole + "/emulator");
+    var path;
+
     for(var i = 0; i < cont.length; i ++) {
-        if(cont[i].split(".")[1] === "exe") return Files.emulatorsLocation + "/" + gameConsole + "/emulator/" + cont[i];
+        if(cont[i].split(".")[1] === "exe" || cont[i] === "emulator.exe") { 
+            path = Files.emulatorsLocation + "/" + gameConsole + "/emulator/" + cont[i];
+            if(cont[i] === "emulator.exe") {
+                break;
+            }
+        }
     }
+
+    return path;
 }
 
 // Used to create Core.emulatorWheel, currently a large memory hog - maybe cut down by dynamically loading metadata etc. by reading files on the fly
@@ -49,16 +62,26 @@ Files.getEmulators = function() {
 
         emulators[i] = new String(emulators[i]);
         if(fs.existsSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms")) {
+            // MAME behaves very different to all other emulators so it's FS is different too
+            // (this also means the scraper deson't work on mame games)
             var roms = fs.readdirSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms");
             emulators[i].roms = [];
             for(var j = 0; j < roms.length; j ++) {
-                emulators[i].roms[j] = new String(roms[j]);
-                emulators[i].roms[j].media = Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + roms[j] + "/media.png";
-                if(fs.existsSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + roms[j] + "/metadata.json")) {
-                    emulators[i].roms[j].metadata = JSON.parse(fs.readFileSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + roms[j] + "/metadata.json"));
-                } else {
-                    //Return default object in case of deleted metadata.json for whatever reason
-                    emulators[i].roms[j].metadata = {description:"No description available...", developer:"???", release:"???", players:"???", genres:"???", title:"???"};
+                if(emulators[i] == "MAME" && roms[j].includes(".zip") || emulators[i] != "MAME") {
+                    const obj = new String(roms[j]);
+
+                    var resDir = emulators[i] == "MAME" ? obj.split(".")[0] + "-res" : obj;
+
+                    obj.media = Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + resDir + "/media.png";
+
+                    if(fs.existsSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + resDir + "/metadata.json")) {
+                        obj.metadata = Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + resDir + "/metadata.json";
+                    } else {
+                        //Return default object in case of deleted metadata.json for whatever reason
+                       obj.metadata = null;
+                    }
+
+                    emulators[i].roms.push(obj);
                 }
             }
         }

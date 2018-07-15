@@ -20,11 +20,20 @@ Games.openGame = function(gameConsole, game) {
 
     Animation.pause();
 
+    if(gameConsole == "MAME") {
+        config.cliArgs.unshift("'" + emulatorPath.split("MAME")[0] + "MAME/emulator'");
+        config.cliArgs.unshift("-inipath");
+        config.cliArgs.unshift("D:/1Repo/Emulators/MAME/roms");
+        config.cliArgs.unshift("-rp");
+    }
+
     Games.emulatorProc = child.execFile(emulatorPath, [gamePath].concat(config.cliArgs), (error, stdout, stderr) => {
         if (error) throw error;
     });
 
-    Games.focusAnode();
+    if(gameConsole != "MAME") {
+        Games.focusAnode();
+    }
 
     //Wait configured time
     window.setTimeout(function() {
