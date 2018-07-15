@@ -2,13 +2,12 @@ const Inputs = {
     core: {},
     gamepad: {
         canPress: [],
-        poll: setInterval(this.waitForGamepad, 500),
         waitForGamepad: function() {
             var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
             if(gamepads[0] != null) {
-                window.clearInterval(this.poll);
-                console.log("gamepad connected: ", gamepads[0]);
-                this.interval = window.setInterval(this.pollInputs, 16);
+                window.clearInterval(Inputs.gamepad.poll);
+                //console.log("gamepad connected: ", gamepads[0]);
+                Inputs.gamepad.interval = window.setInterval(Inputs.gamepad.pollInputs, 100);
             }
         }
     }
@@ -99,15 +98,30 @@ Inputs.gamepad.pollInputs = function() {
         return;
     }
     var gp = gamepads[0];
-    if(Inputs.gamepad.buttonPressed(gp.buttons[0]) && Inputs.gamepad.canPress[0]) {
-        Inputs.core.handleInputs(39);
-    } else if(Inputs.gamepad.buttonPressed(gp.buttons[1]) && Inputs.gamepad.canPress[1]) {
-        Inputs.core.handleInputs(37);
-    } else if(Inputs.gamepad.buttonPressed(gp.buttons[12])) {
-        Inputs.core.handleInputs(38);
-    } else if(Inputs.gamepad.buttonPressed(gp.buttons[13])) {
-        Inputs.core.handleInputs(40);
+    for(var i = 0; i < gp.buttons.length; i ++) {
+    	if(Inputs.gamepad.buttonPressed(gp.buttons[i])) console.log(i + ": " + Inputs.gamepad.buttonPressed(gp.buttons[i]));
     }
+    console.log(gp.axes);
+    console.log("-------");
+
+    // Magic numbers time
+    if(gp.axes[1] >= 0.7) {
+    	// Right
+        Inputs.core.handleInputs(39);
+    } else if(gp.axes[1] <= -0.7) {
+    	// Left
+        Inputs.core.handleInputs(37);
+    } else if(gp.axes[0] >= 0.7) {
+    	// Up
+        Inputs.core.handleInputs(38);
+    } else if(gp.axes[0] <= -0.7) {
+    	// Down
+        Inputs.core.handleInputs(40);
+    } else if(Inputs.gamepad.buttonPressed(gp.buttons[12]) && Inputs.gamepad.canPress[12]) {
+    	// Start game
+    	Inputs.core.handleInputs(32);
+    }
+
     for(var i = 0; i < gp.buttons.length; i ++) {
         if(Inputs.gamepad.buttonPressed(gp.buttons[i])) {
             Inputs.gamepad.canPress[i] = false;
@@ -116,3 +130,5 @@ Inputs.gamepad.pollInputs = function() {
         }
     }
 };
+
+Inputs.gamepad.poll = setInterval(Inputs.gamepad.waitForGamepad, 500);
