@@ -60,7 +60,7 @@ Animation.scrollEmulator = function(arg) {
     } else if(arg == ScrollDirEnum.UP) {
         Core.emulatorWheel.push(Core.emulatorWheel.shift());
 
-        Blocks.newEmulatorBlock("110%", Core.emulatorWheel[Core.emulatorWheel.length - 1]);
+        Blocks.newEmulatorBlock("110%", Core.emulatorWheel[2]);
 
         Animation.core.animateElement(emBlocks.all, {top:"-=30%"});
         Animation.core.animateElement(emBlocks.bottom, Animation.CENTRE_EMULATOR_BOX);
