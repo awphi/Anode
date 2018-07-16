@@ -70,3 +70,7 @@ dist/
 #Misc.
 *.psd
 nvram/
+ui.ini
+mame.ini
+cfg/
+plugin.ini

@@ -101,12 +101,14 @@ function getPlatformDir(id) {
     if(Object.keys(platformDict).length == 0) {
         var emulators = fs.readdirSync(Files.emulatorsLocation);
         for(var i = 0; i < emulators.length; i ++) {
-            const obj = JSON.parse(fs.readFileSync(Files.emulatorsLocation + "/" + emulators[i] + "/config.json"));
-            if(typeof obj.platformId === "number") {
-                platformDict["" + obj.platformId] = Files.emulatorsLocation + "/" + emulators[i];
-            } else if(typeof obj.platformId === "object") {
-                for(var j = 0; j < obj.platformId.length; j ++) {
-                    platformDict["" + obj.platformId[j]] = Files.emulatorsLocation + "/" + emulators[i];
+            if(emulators[i] != "in" && emulators[i] != "MAME") {
+                const obj = JSON.parse(fs.readFileSync(Files.emulatorsLocation + "/" + emulators[i] + "/config.json"));
+                if(typeof obj.platformId === "number") {
+                    platformDict["" + obj.platformId] = Files.emulatorsLocation + "/" + emulators[i];
+                } else if(typeof obj.platformId === "object") {
+                    for(var j = 0; j < obj.platformId.length; j ++) {
+                        platformDict["" + obj.platformId[j]] = Files.emulatorsLocation + "/" + emulators[i];
+                    }
                 }
             }
         }

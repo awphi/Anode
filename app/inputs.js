@@ -97,12 +97,8 @@ Inputs.gamepad.pollInputs = function() {
         window.clearInterval(Inputs.gamepad.interval);
         return;
     }
-    var gp = gamepads[0];
-    for(var i = 0; i < gp.buttons.length; i ++) {
-    	if(Inputs.gamepad.buttonPressed(gp.buttons[i])) console.log(i + ": " + Inputs.gamepad.buttonPressed(gp.buttons[i]));
-    }
-    console.log(gp.axes);
-    console.log("-------");
+
+    const gp = gamepads[0];
 
     // Magic numbers time
     if(gp.axes[1] >= 0.7) {

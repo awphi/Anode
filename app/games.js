@@ -21,9 +21,13 @@ Games.openGame = function(gameConsole, game) {
     Animation.pause();
 
     if(gameConsole == "MAME") {
-        config.cliArgs.unshift("'" + emulatorPath.split("MAME")[0] + "MAME/emulator'");
-        config.cliArgs.unshift("-inipath");
-        config.cliArgs.unshift("D:/1Repo/Emulators/MAME/roms");
+        config.cliArgs.unshift("default");
+        config.cliArgs.unshift("-ctrlr");
+
+        config.cliArgs.unshift(emulatorPath.split("MAME")[0] + "MAME/emulator/ctrlr");
+        config.cliArgs.unshift("-ctrlrpath");
+
+        config.cliArgs.unshift(emulatorPath.split("MAME")[0] + "MAME/roms");
         config.cliArgs.unshift("-rp");
     }
 
