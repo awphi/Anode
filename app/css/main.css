@@ -91,6 +91,7 @@ html {
     flex-grow: 1;
     border-radius: 20%;
     box-shadow: 5px 5px 5px 5px #888;
+    max-height: 40vh;
 }
 
 .rom-box-container {
