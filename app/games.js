@@ -35,7 +35,7 @@ Games.openGame = function(gameConsole, game) {
         if (error) throw error;
     });
 
-    if(gameConsole != "MAME") {
+    if(config.refocusAnode) {
         Games.focusAnode();
     }
 
