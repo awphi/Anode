@@ -21,6 +21,11 @@ Core.setCurrentRom = function(val) {
     $(selector[Core.currentRom % 6]).css("animation-name", "rom-box-breathe");
 }
 
+Core.refreshRomPreview = function() {
+    $(".rom-preview-wrapper").remove();
+    Blocks.newRomPreview(Animation.ROM_BLOCK, Core.emulatorWheel[1], Core.currentRom);
+}
+
 Files.reloadConfig(false);
 
 var topVal = 20;

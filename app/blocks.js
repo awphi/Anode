@@ -53,9 +53,11 @@ Blocks.newRomPreview = function(style, emulator, gameNumber) {
     subtitle.innerHTML = meta.developer + " - " + emulator;
     div.appendChild(subtitle);
 
-    const img = Blocks.core.createClassedElement("rom-media", "img");
-    $(img).attr("src", emulator.roms[gameNumber].media);
-    div.appendChild(img);
+    if(emulator.roms[gameNumber].media != null) {
+        const img = Blocks.core.createClassedElement("rom-media", "img");
+        $(img).attr("src", emulator.roms[gameNumber].media);
+        div.appendChild(img);
+    }
 
     const prop = document.createElement("p");
     prop.innerHTML = "<b>Players:</b> " + meta.players + "<br><b>Release:</b> " + meta.release + "<br><b>Genres:</b> " + meta.genres;
@@ -76,15 +78,21 @@ Blocks.newRomPreview = function(style, emulator, gameNumber) {
 }
 
 Blocks.newRomBox = function(emulator, gameNumber) {
-    const div = Blocks.core.createClassedElement("rom-box");
+    const div = Blocks.core.createClassedElement("rom-box flex-center");
     div.setAttribute("index", gameNumber);
 
     if(emulator == null) {
         $(div).css("visibility", "hidden");
     } else {
-        // Apostrephes are not escaped properly in encodeURI so I added this to do it manually.
-        var str = encodeURI(emulator.roms[gameNumber].media).replace("'", "%27");
-        div.style.backgroundImage = "url(" + str + ")";
+        if(emulator.roms[gameNumber].media != null) {
+            // Apostrephes are not escaped properly in encodeURI so I added this to do it manually.
+            var str = encodeURI(emulator.roms[gameNumber].media).replace("'", "%27");
+            div.style.backgroundImage = "url(" + str + ")";
+        } else {
+            var h2 = document.createElement("h2");
+            h2.innerHTML = emulator.roms[gameNumber].metadata  == null ? "???" : JSON.parse(fs.readFileSync(emulator.roms[gameNumber].metadata)).title;
+            $(div).append(h2);
+        }
     }
 
     return div;

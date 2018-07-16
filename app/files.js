@@ -72,12 +72,15 @@ Files.getEmulators = function() {
 
                     var resDir = emulators[i] == "MAME" ? obj.split(".")[0] + "-res" : obj;
 
-                    obj.media = Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + resDir + "/media.png";
+                    if(fs.existsSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + resDir + "/media.png")) {
+                        obj.media = Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + resDir + "/media.png";
+                    } else {
+                        obj.media = null;
+                    }
 
                     if(fs.existsSync(Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + resDir + "/metadata.json")) {
                         obj.metadata = Files.emulatorsLocation + "/" + emulators[i] + "/roms/" + resDir + "/metadata.json";
                     } else {
-                        //Return default object in case of deleted metadata.json for whatever reason
                        obj.metadata = null;
                     }
 

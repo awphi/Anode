@@ -32,6 +32,13 @@ html {
     height: 100%;
 }
 
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
 .emulator-block {
     background-size: 100% 100%;
     position: absolute;

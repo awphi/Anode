@@ -100,6 +100,8 @@ Animation.scrollRoms = function(arg) {
                         Core.setCurrentRom(last);
                     }
 
+                    Core.refreshRomPreview();
+
                     Animation.allowAnimation = true;
                 });
         }
@@ -123,6 +125,8 @@ Animation.scrollRoms = function(arg) {
                         Core.setCurrentRom(first + 1);
                     }
 
+                    Core.refreshRomPreview();
+
                     Animation.allowAnimation = true;
                 });
         }
@@ -140,8 +144,7 @@ Animation.scrollRoms = function(arg) {
         }
     }
 
-    $(".rom-preview-wrapper").remove();
-    Blocks.newRomPreview(Animation.ROM_BLOCK, Core.emulatorWheel[1], Core.currentRom);
+    Core.refreshRomPreview();
 }
 
 Animation.openRomsMenu = function(emulator) {
